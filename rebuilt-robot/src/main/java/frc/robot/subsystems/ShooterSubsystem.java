@@ -1,0 +1,42 @@
+package frc.robot.subsystems;
+
+import java.util.function.DoubleSupplier;
+
+import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.ShooterConstants;
+
+public class ShooterSubsystem extends SubsystemBase{
+    
+    TalonFX shooterLead = new TalonFX(ShooterConstants.SHOOTER_LEAD_ID);
+    TalonFX shooterFollow = new TalonFX(ShooterConstants.SHOOTER_FOLLOW_ID);
+
+
+    double voltageLead, voltageFollow;
+
+    public ShooterSubsystem(){
+        voltageLead = 0;
+        voltageFollow = 0;
+
+        shooterLead.getConfigurator().apply(ShooterConstants.shooterConfig);
+
+        shooterFollow.getConfigurator().apply(ShooterConstants.shooterConfig);
+        shooterFollow.getConfigurator().apply(ShooterConstants.shooterFollowConfig);
+
+        shooterFollow.setControl(new Follower(shooterLead.getDeviceID(), MotorAlignmentValue.Aligned));
+
+    }
+
+    public Command shoot(DoubleSupplier supplier){
+        return this.runOnce(() -> 
+            shooterLead.setVoltage(supplier.getAsDouble())
+        );
+    }
+
+
+
+}
