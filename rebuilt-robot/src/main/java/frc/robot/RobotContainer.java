@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -51,6 +52,7 @@ public class RobotContainer {
 
      public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+     public PathPlannerAuto auto = null;
   
   public RobotContainer() {
     configureBindings();
@@ -92,11 +94,11 @@ public class RobotContainer {
 
     xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    
+    auto = new PathPlannerAuto("first auto");
   }
 
   public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
+    return auto;
   }
 
   private double getDistanceFromHub(){
