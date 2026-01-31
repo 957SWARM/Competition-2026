@@ -44,9 +44,15 @@ public class HoodSubsystem extends SubsystemBase{
         );
     }
 
-    public Command driveHood(DoubleSupplier supplier){
-        return this.run(() ->
-            hood.set(ControlMode.MotionMagic, supplier.getAsDouble())
+    public Command driveHood(DoubleSupplier positionSupplier, BooleanSupplier conveyerSupplier){
+        return this.run(() -> {
+            if(conveyerSupplier.getAsBoolean()){
+                hood.set(ControlMode.MotionMagic, positionSupplier.getAsDouble());
+            } else {
+                resetHood();
+            }
+        }
+      
         );
     }
 
