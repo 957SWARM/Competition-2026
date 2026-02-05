@@ -1,6 +1,15 @@
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Rotation;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.TargetingConstants;
 
 public class TargetingHelper {
     
@@ -39,6 +48,84 @@ public class TargetingHelper {
                 return p;
         }
         return -1;
+    }
+
+    public static Rotation2d getAngleToGoalPose(Pose2d robotPose, Pose2d goalPose){
+
+        Pose2d poseDifference = robotPose.relativeTo(goalPose);
+        Rotation2d outputAngle = new Rotation2d(poseDifference.getX(), poseDifference.getY());
+
+        return outputAngle;
+    }
+
+    public static double getDistanceToGoalPose(Pose2d robotPose, Pose2d goalPose){
+        
+        Pose2d poseDifference = robotPose.relativeTo(goalPose);
+        double relativeX = poseDifference.getX();
+        double relativeY = poseDifference.getY();
+        double distance = Math.hypot(relativeX, relativeY);
+
+        return distance;
+    }
+
+    //Prevents near-point correction
+    public static double boundedPLoop(double min, double max, double setpoint, double kP, double measurement, double deadband){
+        
+        double error = setpoint - measurement;
+        double output;
+
+        if(Math.abs(error) < deadband) 
+            return 0;
+
+        output = error * kP;
+
+        if(output < min && output > 0)
+            return min;
+        if(output > -min && output < 0)
+            return -min;
+        if(output > max)
+            return max;
+        if(output < -max)
+            return -max;
+        
+        return output;
+    }
+
+    public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose){
+        double botHeading = botPose.getRotation().getDegrees();
+
+        double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getRotations();
+
+        double measurementOne = botHeading;
+        double measurementTwo = botHeading;
+
+        if(Math.abs(targetHeading) < 0)
+            measurementOne += 360;
+         
+        double measurement;
+
+        if(targetHeading - measurementOne > measurementTwo - targetHeading){
+            measurement = measurementTwo;
+        } else {
+            measurement = measurementOne;
+        }
+
+        double angularSpeed = TargetingHelper.boundedPLoop(TargetingConstants.MIN,
+                                                            TargetingConstants.MAX,
+                                                            targetHeading,
+                                                            TargetingConstants.KP,
+                                                            measurement,
+                                                            TargetingConstants.DEADBAND);
+
+        return angularSpeed;
+    }
+
+    public static Pose2d getHubPose2d(){
+        Pose2d targetHub = new Pose2d(FieldConstants.RED_HUB_LOCATION.getX(), FieldConstants.RED_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
+        if(DriverStation.getAlliance().get() == Alliance.Blue){
+            targetHub = new Pose2d(FieldConstants.BLUE_HUB_LOCATION.getX(), FieldConstants.BLUE_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
+        }
+        return targetHub;
     }
 
 }

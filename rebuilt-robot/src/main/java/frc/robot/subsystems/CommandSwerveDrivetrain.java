@@ -311,6 +311,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         return super.samplePoseAt(Utils.fpgaToCurrentTime(timestampSeconds));
     }
 
+    public Pose2d getCurrentPose(){
+        return getState().Pose;
+    }
+
     public void configureAutoBuilder(){
         try{
             var config = RobotConfig.fromGUISettings();

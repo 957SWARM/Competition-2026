@@ -11,21 +11,30 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.TargetingConstants;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.Conveyer;
+import frc.robot.subsystems.ConveyerSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
+import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -39,9 +48,14 @@ public class RobotContainer {
   private final PivotSubsystem pivot = new PivotSubsystem();
   private final RollerSubsystem roller = new RollerSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
-  private final Conveyer conveyer = new Conveyer();
+  private final ConveyerSubsystem conveyer = new ConveyerSubsystem();
+  private final KickerSubsystem kicker = new KickerSubsystem();
 
   CommandXboxController xbox = new CommandXboxController(0);
+
+  PIDController pid = new PIDController(0.25, 0, 0);
+
+
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -61,9 +75,10 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(getDistanceFromHub()), conveyer.isRunningSupplier()));
-    shooter.setDefaultCommand(shooter.shoot(() -> TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub())));
+    hood.setDefaultCommand(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose())), conveyer.isConveyerRunningSupplier()));
+    shooter.setDefaultCommand(shooter.shoot(() -> TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))));
     conveyer.setDefaultCommand(conveyer.stopConveyer());
+    kicker.setDefaultCommand(kicker.stopKicker());
 
     drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -101,10 +116,16 @@ public class RobotContainer {
     return auto;
   }
 
-  private double getDistanceFromHub(){
+  public double getDistanceFromHub(Pose2d robotPose){
     //Call limelight info to get distance
-    return 5;
+    Pose2d targetHub = new Pose2d(FieldConstants.RED_HUB_LOCATION.getX(), FieldConstants.RED_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
+    if(DriverStation.getAlliance().get() == Alliance.Blue){
+      targetHub = new Pose2d(FieldConstants.BLUE_HUB_LOCATION.getX(), FieldConstants.BLUE_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
+    }
+    double distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), targetHub);
+    return distance;
   }
+ 
 
   
 }

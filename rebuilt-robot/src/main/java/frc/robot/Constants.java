@@ -12,9 +12,12 @@ import com.ctre.phoenix6.signals.ExternalFeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 
-public class Constants {
-    
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
+public class Constants {
 
     public class PivotConstants{
         
@@ -128,8 +131,41 @@ public class Constants {
         
     }
 
+    public class ConveyerConstants{
+
+        public static final double FEED_VOLTAGE = 5;
+        public static final double KICK_VOLTAGE = 8;
+
+        public static final int CONVEYER_ID = 7;
+        public static final int KICKER_ID = 8;
+
+        public static final TalonFXConfiguration conveyerConfig = new TalonFXConfiguration();
+        public static final TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
+
+        static{
+            
+            conveyerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+            kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+
+        }
+    }
+
     public class ControllerConstants{
 
         public static final double TRIGGER_THRESHOLD = 0.5;
+    }
+
+    public class FieldConstants{
+
+        public static final Pose2d RED_HUB_LOCATION = new Pose2d(11.912, 4.024, Rotation2d.fromDegrees(0));
+        public static final Pose2d BLUE_HUB_LOCATION = new Pose2d(4.628, 4.024, Rotation2d.fromDegrees(0));
+    }
+
+    public class TargetingConstants{
+
+        public static final double MIN = 0;
+        public static final double MAX = 1;
+        public static final double DEADBAND = 0.1;
+        public static final double KP = 1;
     }
 }
