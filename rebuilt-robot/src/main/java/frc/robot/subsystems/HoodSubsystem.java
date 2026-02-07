@@ -9,10 +9,13 @@ import com.ctre.phoenix.motorcontrol.RemoteSensorSource;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
+import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.units.measure.Power;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
-
+import frc.robot.Constants.PowerConstants;
+@Logged
 public class HoodSubsystem extends SubsystemBase{
     
     CANcoder hoodEncoder = new CANcoder(HoodConstants.ENCODER_ID);
@@ -24,6 +27,8 @@ public class HoodSubsystem extends SubsystemBase{
     public HoodSubsystem(){
         hood.configRemoteFeedbackFilter(HoodConstants.ENCODER_ID, RemoteSensorSource.CANCoder, 0);
         hood.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 0);
+
+        hood.configPeakCurrentLimit(PowerConstants.HOOD_LIMIT);
     }
 
     public boolean isStopped(){

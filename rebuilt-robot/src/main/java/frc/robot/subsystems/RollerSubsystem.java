@@ -1,19 +1,24 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.hardware.TalonFXS;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
-
+import frc.robot.Constants.PowerConstants;
+@Logged
 public class RollerSubsystem extends SubsystemBase{
     
-    TalonFX intake;
+    TalonFXS intake;
 
     public double voltage;
 
     public RollerSubsystem(){
-        intake = new TalonFX(IntakeConstants.INTAKE_ID);
+        intake = new TalonFXS(IntakeConstants.INTAKE_ID);
+
+        intake.getConfigurator().apply(IntakeConstants.rollerConfig);
+        intake.getConfigurator().apply(PowerConstants.mid_low);
 
         voltage = 0;
     }
