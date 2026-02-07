@@ -90,9 +90,9 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose())), conveyer.isConveyerRunningSupplier()));
-    shooter.setDefaultCommand(shooter.shoot(() -> TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))));
-    conveyer.setDefaultCommand(conveyer.stopConveyer());
+    hood.setDefaultCommand(hood.driveHood(() -> 0, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
+    shooter.setDefaultCommand(shooter.shoot(() -> 3));//TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))
+    conveyer.setDefaultCommand(conveyer.stopConveyer()); 
     kicker.setDefaultCommand(kicker.stopKicker());
 
     drivetrain.setDefaultCommand(
