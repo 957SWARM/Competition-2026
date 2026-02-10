@@ -17,6 +17,8 @@ public class RollerSubsystem extends SubsystemBase{
     public RollerSubsystem(){
         intake = new TalonFXS(IntakeConstants.INTAKE_ID);
 
+        
+
         intake.getConfigurator().apply(IntakeConstants.rollerConfig);
         intake.getConfigurator().apply(PowerConstants.mid_low);
 

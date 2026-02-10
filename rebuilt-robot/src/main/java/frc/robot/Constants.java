@@ -7,6 +7,7 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -69,6 +70,9 @@ public class Constants {
         public static final double EJECT_VOLTAGE = -3.0;
 
         public static final TalonFXSConfiguration rollerConfig = new TalonFXSConfiguration();
+        static {
+            rollerConfig.Commutation.MotorArrangement = MotorArrangementValue.NEO_JST;
+        }
     }
 
     public class ShooterConstants{
