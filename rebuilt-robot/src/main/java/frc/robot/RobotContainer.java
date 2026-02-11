@@ -47,10 +47,10 @@ import frc.robot.subsystems.ShooterSubsystem;
 @Logged
 public class RobotContainer {
   
-  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)/8; // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  private final SendableChooser<Command> autoChooser;
+  //private final SendableChooser<Command> autoChooser;
 
   private final HoodSubsystem hood = new HoodSubsystem();
   private final PivotSubsystem pivot = new PivotSubsystem();
@@ -74,14 +74,14 @@ public class RobotContainer {
 
      public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-     public PathPlannerAuto auto = null;
+    // public PathPlannerAuto auto = null;
   
   public RobotContainer() {
 
-    autoChooser = AutoBuilder.buildAutoChooser();
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    //autoChooser = AutoBuilder.buildAutoChooser();
+    //SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    autoChooser.addOption("OG auto", new InstantCommand());
+    //autoChooser.addOption("OG auto", new InstantCommand());
 
 
     configureBindings();
@@ -124,11 +124,11 @@ public class RobotContainer {
 
     xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
 
-    auto = new PathPlannerAuto("first auto");
+    //auto = new PathPlannerAuto("first auto");
   }
 
   public Command getAutonomousCommand() {
-    return auto;
+    return null;
   }
 
   public double getDistanceFromHub(Pose2d robotPose){
@@ -139,6 +139,14 @@ public class RobotContainer {
     }
     double distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), targetHub);
     return distance;
+  }
+
+  public void updateDrivebaseOdemetry(){
+
+    LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getCurrentPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    drivetrain.addVisionMeasurement((Pose2d) poseEstimate.pose, poseEstimate.timestampSeconds);
+
   }
  
 

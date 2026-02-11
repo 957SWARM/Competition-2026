@@ -15,12 +15,16 @@ public class Robot extends TimedRobot {
   private final RobotContainer m_robotContainer;
 
   public Robot() {
+    super();
     m_robotContainer = new RobotContainer();
+    int[] validIDs = {18, 19, 20, 12, 24, 25, 26, 27};
+    LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run();
+    m_robotContainer.updateDrivebaseOdemetry();
   }
 
   @Override
