@@ -25,15 +25,18 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.generated.TunerConstants;
@@ -45,12 +48,15 @@ import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 @Logged
+@SuppressWarnings("unused")
 public class RobotContainer {
   
-  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)/8; // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)/1.333; // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   //private final SendableChooser<Command> autoChooser;
+
+  public final Field2d field = new Field2d();
 
   private final HoodSubsystem hood = new HoodSubsystem();
   private final PivotSubsystem pivot = new PivotSubsystem();
@@ -90,7 +96,7 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> 0, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
+    //hood.setDefaultCommand(hood.driveHood(() -> 0, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
     shooter.setDefaultCommand(shooter.shoot(() -> 3));//TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))
     conveyer.setDefaultCommand(conveyer.stopConveyer()); 
     kicker.setDefaultCommand(kicker.stopKicker());
@@ -107,22 +113,26 @@ public class RobotContainer {
     xbox.y().toggleOnTrue(pivot.deploy());
     xbox.a().toggleOnTrue(roller.intakeCommand());
 
-    xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
-        xbox.b().whileTrue(drivetrain.applyRequest(() ->
-            point.withModuleDirection(new Rotation2d(-xbox.getLeftY(), -xbox.getLeftX()))
-        ));
+    //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
+        //xbox.b().whileTrue(drivetrain.applyRequest(() ->
+            //point.withModuleDirection(new Rotation2d(-xbox.getLeftY(), -xbox.getLeftX()))
+        //));
 
     xbox.axisGreaterThan(3, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootToHub(roller, conveyer, shooter, kicker));
     xbox.axisGreaterThan(2, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootFromNeutral(hood, shooter, roller, conveyer, kicker));
 
-    new Trigger(() -> !hood.hasBeenZeroed()).onTrue(Sequencing.zeroHood(hood));
+    //new Trigger(() -> !hood.hasBeenZeroed()).onTrue(Sequencing.zeroHood(hood));
 
     final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-    xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric));
+    //Zero gyro, Set robot orientation in attempt to uncook MT2
+    xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
+    .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
+
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToHub(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> FieldConstants.BLUE_HUB_LOCATION, drive, kicker, shooter));
 
     //auto = new PathPlannerAuto("first auto");
   }
@@ -143,10 +153,20 @@ public class RobotContainer {
 
   public void updateDrivebaseOdemetry(){
 
-    LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getCurrentPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
-    LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
-    drivetrain.addVisionMeasurement((Pose2d) poseEstimate.pose, poseEstimate.timestampSeconds);
+    //Working Megatag1 Code (More reliable, less accurate)
+    if(LimelightHelpers.getTV("limelight")){
+      LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+    }
+    
+    //Megatag2 (Still iffy, somethings up with the rotation still)
+    // LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getCurrentPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
+    // if(LimelightHelpers.getTV("limelight")){
+    //   LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("limelight");
+    //   drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+    // }
 
+    field.setRobotPose(drivetrain.getCurrentPose());
   }
  
 

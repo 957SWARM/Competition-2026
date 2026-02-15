@@ -4,8 +4,11 @@
 
 package frc.robot;
 
+import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 @Logged
@@ -19,6 +22,12 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     int[] validIDs = {18, 19, 20, 12, 24, 25, 26, 27};
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
+    LimelightHelpers.SetIMUMode("limelight", 4); // Seed internal IMU
+
+    SmartDashboard.putData("Field", m_robotContainer.field);
+
+    DataLogManager.start();
+    Epilogue.bind(this);
   }
 
   @Override

@@ -159,9 +159,9 @@ public class Constants {
     public class TargetingConstants{
 
         public static final double MIN = 0;
-        public static final double MAX = 1;
-        public static final double DEADBAND = 0.1;
-        public static final double KP = 1;
+        public static final double MAX = 5;
+        public static final double DEADBAND = 0;
+        public static final double KP = .1;
     }
 
     public class PowerConstants{

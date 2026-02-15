@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -52,8 +53,11 @@ public class TargetingHelper {
 
         Pose2d poseDifference = robotPose.relativeTo(goalPose);
         Rotation2d outputAngle = new Rotation2d(poseDifference.getX(), poseDifference.getY());
+        
+        //System.out.println(outputAngle);
 
-        return outputAngle;
+        // REMOVE PLUS !!!!!!
+        return outputAngle.plus(new Rotation2d(Math.toRadians(90)));
     }
 
     public static double getDistanceToGoalPose(Pose2d robotPose, Pose2d goalPose){
@@ -72,6 +76,8 @@ public class TargetingHelper {
         double error = setpoint - measurement;
         double output;
 
+        System.out.println(error);
+
         if(Math.abs(error) < deadband) 
             return 0;
 
@@ -85,37 +91,29 @@ public class TargetingHelper {
             return max;
         if(output < -max)
             return -max;
-        
+
         return output;
     }
 
+    //Wrap-around code sponsered by ChatGPT
     public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose){
         double botHeading = botPose.getRotation().getDegrees();
 
-        double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getRotations();
+        double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getDegrees();
+                
+        double error = targetHeading - botHeading;
+        error = MathUtil.inputModulus(error, -180.0, 180.0);
 
-        double measurementOne = botHeading;
-        double measurementTwo = botHeading;
+        double angularSpeed = TargetingHelper.boundedPLoop(
+            TargetingConstants.MIN,
+            TargetingConstants.MAX,
+            0,                     // setpoint is 0 error
+            TargetingConstants.KP,
+            error,                 // measurement is error
+            TargetingConstants.DEADBAND
+        );
 
-        if(Math.abs(targetHeading) < 0)
-            measurementOne += 360;
-         
-        double measurement;
-
-        if(targetHeading - measurementOne > measurementTwo - targetHeading){
-            measurement = measurementTwo;
-        } else {
-            measurement = measurementOne;
-        }
-
-        double angularSpeed = TargetingHelper.boundedPLoop(TargetingConstants.MIN,
-                                                            TargetingConstants.MAX,
-                                                            targetHeading,
-                                                            TargetingConstants.KP,
-                                                            measurement,
-                                                            TargetingConstants.DEADBAND);
-
-        return angularSpeed;
+        return -angularSpeed;
     }
 
     public static Pose2d getHubPose2d(){
