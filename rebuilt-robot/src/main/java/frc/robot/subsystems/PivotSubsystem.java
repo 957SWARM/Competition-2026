@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.time.Period;
+
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -7,6 +9,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.PowerConstants;
 
@@ -17,13 +20,22 @@ public class PivotSubsystem extends SubsystemBase{
     CANcoder encoder = new CANcoder(PivotConstants.ENCODER_ID);
 
     MotionMagicVoltage request;
+
+    boolean zeroed = false;
     
 
     public PivotSubsystem(){
         pivot.getConfigurator().apply(PivotConstants.config);
         pivot.getConfigurator().apply(PowerConstants.low);
 
-        request = new MotionMagicVoltage(0);
+        request = new MotionMagicVoltage(0).withSlot(0);
+
+        //encoder.getConfigurator().apply(PivotConstants.encoderConfig);
+
+    }
+
+    public void periodic() {
+       // System.out.println(encoder.getPosition().getValueAsDouble());
     }
 
     public double getPosition(){
@@ -37,10 +49,14 @@ public class PivotSubsystem extends SubsystemBase{
     }
 
     public Command stow(){
-        return this.run(() -> 
-            pivot.setControl(request.withPosition(PivotConstants.DEPLOY_ANGLE))
-        );
+        return this.run(() -> {
+            pivot.setControl(request.withPosition(PivotConstants.STOW_ANGLE));
+    });
     }
+
+    
+
+
 
     
 

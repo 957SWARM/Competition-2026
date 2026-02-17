@@ -12,7 +12,7 @@ import frc.robot.Constants.TargetingConstants;
 
 public class TargetingHelper {
     
-    static double[] velocity = {0, 0, 0, 0, 0};
+    static double[] voltage = {4, 6, 8, 10, 12}; 
     static double[] angle = {0, 0, 0, 0, 0};
     static double[] distancePoints = {0, 0, 0, 0, 0};
 
@@ -32,10 +32,11 @@ public class TargetingHelper {
         return targetAngle;
     }
 
+    /* 
     public static double getExpectedShooterVoltage(double distance) {
         double expectedVoltage = Math.sqrt((distance * 9.805967)/Math.sin(2*getExpectedHoodPosition(distance))) * Constants.HoodConstants.VELOCITY_TO_VOLTS;
         return expectedVoltage;
-    }
+    }*/
 
     public static int getNearestPoint(double distance){
 
@@ -57,7 +58,7 @@ public class TargetingHelper {
         //System.out.println(outputAngle);
 
         // REMOVE PLUS !!!!!!
-        return outputAngle.plus(new Rotation2d(Math.toRadians(90)));
+        return outputAngle;
     }
 
     public static double getDistanceToGoalPose(Pose2d robotPose, Pose2d goalPose){

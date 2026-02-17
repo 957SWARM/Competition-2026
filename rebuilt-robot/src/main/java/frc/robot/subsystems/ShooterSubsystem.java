@@ -31,7 +31,7 @@ public class ShooterSubsystem extends SubsystemBase{
         shooterFollow.getConfigurator().apply(ShooterConstants.shooterFollowConfig);
         shooterFollow.getConfigurator().apply(PowerConstants.mid_high);
 
-        shooterFollow.setControl(new Follower(shooterLead.getDeviceID(), MotorAlignmentValue.Aligned));
+        shooterFollow.setControl(new Follower(shooterLead.getDeviceID(), MotorAlignmentValue.Opposed));
 
     }
 

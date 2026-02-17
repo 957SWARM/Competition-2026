@@ -14,8 +14,6 @@ public class KickerSubsystem extends SubsystemBase {
 
     TalonFX kicker = new TalonFX(ConveyerConstants.KICKER_ID);
 
-    double kickerVoltage;
-
     public KickerSubsystem(){
 
         kicker.getConfigurator().apply(ConveyerConstants.kickerConfig);
@@ -24,7 +22,7 @@ public class KickerSubsystem extends SubsystemBase {
 
     public Command runKicker(){
         return this.run(() ->
-            kicker.setVoltage(kickerVoltage)
+            kicker.setVoltage(ConveyerConstants.KICK_VOLTAGE)
         );
     }
 

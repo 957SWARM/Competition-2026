@@ -26,7 +26,7 @@ public class Sequencing {
                     .withTimeout(HoodConstants.ZEROING_TIME)
                     .andThen(
                         hood.zeroEncoder()
-                        .until(() -> hood.isStopped()));
+                        .until(() -> hood.isStopped())).andThen(() -> hood.homeHood());
     }
 
     public static Command shootToHub(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){

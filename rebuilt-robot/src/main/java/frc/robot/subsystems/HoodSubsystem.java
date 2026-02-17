@@ -10,6 +10,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import com.ctre.phoenix6.hardware.CANcoder;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.HoodConstants;
@@ -23,42 +24,57 @@ public class HoodSubsystem extends SubsystemBase{
 
     boolean zeroed = false;
 
+    PIDController loop = new PIDController(1, 0, 0);
+
     public HoodSubsystem(){
         hood.configRemoteFeedbackFilter(HoodConstants.ENCODER_ID, RemoteSensorSource.CANCoder, 0);
         hood.configSelectedFeedbackSensor(RemoteFeedbackDevice.RemoteSensor0, 0, 0);
 
         hood.configPeakCurrentLimit(PowerConstants.HOOD_LIMIT);
+        hood.setInverted(true);
     }
 
     public boolean isStopped(){
-        return Math.abs(hoodEncoder.getVelocity().getValueAsDouble()) < 0.08;
+        return Math.abs(hoodEncoder.getVelocity().getValueAsDouble()) < 0.01;
     }
 
     public boolean hasBeenZeroed(){
         return zeroed;
     }
   
-    public void resetHood(){
+    public void homeHood(){
         hoodEncoder.setPosition(0);
     }
 
     public Command zeroEncoder(){
-        return this.run(() -> 
-            hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED)
+        return this.run(() -> {
+            hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED);
+            System.out.println("Zeroing");
+        }
+            
         );
     }
 
     public Command driveHood(DoubleSupplier positionSupplier, BooleanSupplier conveyerSupplier){
         return this.run(() -> {
             if(conveyerSupplier.getAsBoolean()){
-                hood.set(ControlMode.MotionMagic, positionSupplier.getAsDouble());
+                setHoodPosition(positionSupplier.getAsDouble());
             } else {
-                resetHood();
+                setHoodPosition(HoodConstants.IDLE_POSITION);
             }
         }
       
         );
     }
 
+    public void periodic(){
+        //hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED);
+        System.out.println(hood.getSelectedSensorPosition());
+    }
+
+    public void setHoodPosition(double setpoint){
+        double output = loop.calculate(hoodEncoder.getPosition().getValueAsDouble(), setpoint);
+        hood.set(ControlMode.PercentOutput, output);
+    }
 
 }

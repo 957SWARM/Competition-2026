@@ -96,8 +96,8 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    //hood.setDefaultCommand(hood.driveHood(() -> 0, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
-    shooter.setDefaultCommand(shooter.shoot(() -> 3));//TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))
+    hood.setDefaultCommand(hood.driveHood(() -> 1, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
+    shooter.setDefaultCommand(shooter.shoot(() -> 1));//TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))
     conveyer.setDefaultCommand(conveyer.stopConveyer()); 
     kicker.setDefaultCommand(kicker.stopKicker());
 
@@ -118,11 +118,11 @@ public class RobotContainer {
             //point.withModuleDirection(new Rotation2d(-xbox.getLeftY(), -xbox.getLeftX()))
         //));
 
-    xbox.axisGreaterThan(3, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootToHub(roller, conveyer, shooter, kicker));
-    xbox.axisGreaterThan(2, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootFromNeutral(hood, shooter, roller, conveyer, kicker));
-
-    //new Trigger(() -> !hood.hasBeenZeroed()).onTrue(Sequencing.zeroHood(hood));
-
+    //xbox.axisGreaterThan(3, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootToHub(roller, conveyer, shooter, kicker));
+    //xbox.axisGreaterThan(2, ControllerConstants.TRIGGER_THRESHOLD).toggleOnTrue(Sequencing.shootFromNeutral(hood, shooter, roller, conveyer, kicker));
+    
+    new Trigger(() -> !hood.hasBeenZeroed() && DriverStation.isEnabled()).whileTrue(Sequencing.zeroHood(hood));
+    
     final var idle = new SwerveRequest.Idle();
         RobotModeTriggers.disabled().whileTrue(
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
