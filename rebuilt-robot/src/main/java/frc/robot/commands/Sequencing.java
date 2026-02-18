@@ -7,6 +7,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.HoodConstants;
@@ -30,7 +32,7 @@ public class Sequencing {
     }
 
     public static Command shootToHub(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
-        return roller.intakeCommand().alongWith(conveyer.runConveyerForwards()).alongWith(kicker.runKicker());
+        return roller.intakeCommand().alongWith(new WaitCommand(1).andThen(conveyer.runConveyerForwards())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
     public static Command shootFromNeutral(HoodSubsystem hood, ShooterSubsystem shooter, RollerSubsystem roller, ConveyerSubsystem conveyer, KickerSubsystem kicker){

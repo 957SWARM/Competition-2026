@@ -24,7 +24,7 @@ public class HoodSubsystem extends SubsystemBase{
 
     boolean zeroed = false;
 
-    PIDController loop = new PIDController(1, 0, 0);
+    PIDController loop = new PIDController(HoodConstants.HOOD_KP, 0, 0);
 
     public HoodSubsystem(){
         hood.configRemoteFeedbackFilter(HoodConstants.ENCODER_ID, RemoteSensorSource.CANCoder, 0);
@@ -47,11 +47,7 @@ public class HoodSubsystem extends SubsystemBase{
     }
 
     public Command zeroEncoder(){
-        return this.run(() -> {
-            hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED);
-            System.out.println("Zeroing");
-        }
-            
+        return this.run(() -> hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED)
         );
     }
 
@@ -60,21 +56,20 @@ public class HoodSubsystem extends SubsystemBase{
             if(conveyerSupplier.getAsBoolean()){
                 setHoodPosition(positionSupplier.getAsDouble());
             } else {
-                setHoodPosition(HoodConstants.IDLE_POSITION);
+                setHoodPosition(positionSupplier.getAsDouble());
             }
         }
-      
         );
     }
 
-    public void periodic(){
-        //hood.set(ControlMode.PercentOutput, HoodConstants.ZEROING_SPEED);
-        System.out.println(hood.getSelectedSensorPosition());
-    }
-
     public void setHoodPosition(double setpoint){
-        double output = loop.calculate(hoodEncoder.getPosition().getValueAsDouble(), setpoint);
+        double output = loop.calculate(hoodEncoder.getPosition().getValueAsDouble(), setpoint * HoodConstants.MAX_HOOD_POS);
+        output = Math.min(output, 0.5);
+        output = Math.max(output, -0.5);
+        
         hood.set(ControlMode.PercentOutput, output);
     }
+
+
 
 }

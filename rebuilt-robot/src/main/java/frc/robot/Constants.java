@@ -125,15 +125,20 @@ public class Constants {
         public static final double IDLE_POSITION = 0.25;
 
         public static final double ZEROING_TIME = 0.1;
+        public static final double MAX_HOOD_POS = 2.8;
 
         public static final double VELOCITY_TO_VOLTS = 1.0;
+
+        public static final double HOOD_KP = 20;
+        public static final double HOOD_KI = 0;
+        public static final double HOOD_KD = 0;
 
         public static final TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
     }
 
     public class ConveyerConstants{
 
-        public static final double FEED_VOLTAGE = 3;
+        public static final double FEED_VOLTAGE = 11;
         public static final double KICK_VOLTAGE = 12;
 
         public static final int CONVEYER_ID = 18;

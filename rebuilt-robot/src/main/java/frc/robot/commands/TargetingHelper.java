@@ -12,9 +12,9 @@ import frc.robot.Constants.TargetingConstants;
 
 public class TargetingHelper {
     
-    static double[] voltage = {4, 6, 8, 10, 12}; 
-    static double[] angle = {0, 0, 0, 0, 0};
-    static double[] distancePoints = {0, 0, 0, 0, 0};
+    static double[] voltage = {5, 5, 8, 5, 5}; 
+    static double[] angle = {0, 0.035, 0.5, 0.9, 1};
+    static double[] distancePoints = {0, 2.6, 4.2, 8, 16};
 
     public static double calculateWeight(double distance){
    
@@ -29,6 +29,14 @@ public class TargetingHelper {
         int closest = getNearestPoint(distance);
         
         double targetAngle = (angle[closest] * (1 - w)) + (angle[closest + 1] * w);
+        return targetAngle;
+    }
+
+    public static double getExpectedShooterVoltage(double distance){
+        double w = calculateWeight(distance);
+        int closest = getNearestPoint(distance);
+        
+        double targetAngle = (voltage[closest] * (1 - w)) + (voltage[closest + 1] * w);
         return targetAngle;
     }
 
@@ -76,8 +84,6 @@ public class TargetingHelper {
         
         double error = setpoint - measurement;
         double output;
-
-        System.out.println(error);
 
         if(Math.abs(error) < deadband) 
             return 0;

@@ -51,7 +51,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 @SuppressWarnings("unused")
 public class RobotContainer {
   
-  private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond)/1.333; // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 0.125 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   //private final SendableChooser<Command> autoChooser;
@@ -96,8 +96,8 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> 1, conveyer.isConveyerRunningSupplier()));//TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose()))
-    shooter.setDefaultCommand(shooter.shoot(() -> 1));//TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))
+    hood.setDefaultCommand(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose())), conveyer.isConveyerRunningSupplier()));
+    shooter.setDefaultCommand(shooter.shoot(() -> TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))));
     conveyer.setDefaultCommand(conveyer.stopConveyer()); 
     kicker.setDefaultCommand(kicker.stopKicker());
 
@@ -112,6 +112,7 @@ public class RobotContainer {
 
     xbox.y().toggleOnTrue(pivot.deploy());
     xbox.a().toggleOnTrue(roller.intakeCommand());
+    xbox.start().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
@@ -132,7 +133,7 @@ public class RobotContainer {
     xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToHub(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> FieldConstants.BLUE_HUB_LOCATION, drive, kicker, shooter));
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToHub(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
 
     //auto = new PathPlannerAuto("first auto");
   }
@@ -142,12 +143,8 @@ public class RobotContainer {
   }
 
   public double getDistanceFromHub(Pose2d robotPose){
-    //Call limelight info to get distance
-    Pose2d targetHub = new Pose2d(FieldConstants.RED_HUB_LOCATION.getX(), FieldConstants.RED_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
-    if(DriverStation.getAlliance().get() == Alliance.Blue){
-      targetHub = new Pose2d(FieldConstants.BLUE_HUB_LOCATION.getX(), FieldConstants.BLUE_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
-    }
-    double distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), targetHub);
+    double distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), TargetingHelper.getHubPose2d());
+    System.out.println(distance);
     return distance;
   }
 

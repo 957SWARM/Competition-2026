@@ -38,4 +38,10 @@ public class ConveyerSubsystem extends SubsystemBase{
         return () -> conveyer.get() != 0;
     }
 
+    public Command runConveyerBackwards(){
+        return this.run(() -> 
+            conveyer.setVoltage(-ConveyerConstants.FEED_VOLTAGE)
+        );
+    }
+
 }
