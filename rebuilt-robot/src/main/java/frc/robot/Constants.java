@@ -118,7 +118,7 @@ public class Constants {
         public static final int HOOD_ID = 16;
         public static final int ENCODER_ID = 14;
 
-        public static final double ZEROING_SPEED = -0.2;
+        public static final double ZEROING_SPEED = -0.5;
         public static final double ZERO_SPEED = 0.08;
 
         public static final double FROM_NEUTRAL_ANGLE = 30;
@@ -138,7 +138,7 @@ public class Constants {
 
     public class ConveyerConstants{
 
-        public static final double FEED_VOLTAGE = 11;
+        public static final double FEED_VOLTAGE = 0;
         public static final double KICK_VOLTAGE = 12;
 
         public static final int CONVEYER_ID = 18;
