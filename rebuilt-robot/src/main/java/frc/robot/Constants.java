@@ -163,6 +163,11 @@ public class Constants {
 
         public static final Pose2d RED_HUB_LOCATION = new Pose2d(11.912, 4.024, Rotation2d.fromDegrees(0));
         public static final Pose2d BLUE_HUB_LOCATION = new Pose2d(4.628, 4.024, Rotation2d.fromDegrees(0));
+
+        public static final Pose2d BLUE_TOP_PASSZONE = new Pose2d(0, 0, null);
+        public static final Pose2d BLUE_BOTTOM_PASSZONE = new Pose2d(0, 0, null);
+        public static final Pose2d RED_TOP_PASSZONE = new Pose2d(0, 0, null);
+        public static final Pose2d RED_BOTTOM_PASSZONE = new Pose2d(0, 0, null);
     }
 
     public class TargetingConstants{

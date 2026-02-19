@@ -15,6 +15,8 @@ public class TargetingHelper {
     static double[] angle = {0, 0.035, 0.5, 0.9, 1};
     static double[] distancePoints = {0, 2.6, 4.2, 8, 16};
 
+    public static String alliance = "Red";
+
     public static double calculateWeight(double distance){
    
         double closest = distancePoints[getNearestPoint(distance)];
@@ -126,8 +128,28 @@ public class TargetingHelper {
         Pose2d targetHub = new Pose2d(FieldConstants.RED_HUB_LOCATION.getX(), FieldConstants.RED_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
         if(DriverStation.getAlliance().get() == Alliance.Blue){
             targetHub = new Pose2d(FieldConstants.BLUE_HUB_LOCATION.getX(), FieldConstants.BLUE_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
+            alliance = "Blue";
         }
         return targetHub;
+    }
+
+    public static Pose2d getPassPose2d(Pose2d robotPose){
+        Pose2d targetPass = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        if(alliance == "Blue"){    
+            if(robotPose.getY() < 4){
+                targetPass = FieldConstants.BLUE_BOTTOM_PASSZONE;
+            } else {
+                targetPass = FieldConstants.BLUE_TOP_PASSZONE;
+            }   
+        } else {
+            if(robotPose.getY() < 4){
+                targetPass = FieldConstants.RED_BOTTOM_PASSZONE;
+            } else {
+                targetPass = FieldConstants.RED_TOP_PASSZONE;
+            }
+        
+        }
+        return targetPass;
     }
 
 }

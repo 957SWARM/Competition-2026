@@ -9,7 +9,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants;
 import frc.robot.Constants.HoodConstants;
 
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -30,30 +29,25 @@ public class Sequencing {
                         .until(() -> hood.isStopped())).andThen(() -> hood.homeHood());
     }
 
-    public static Command shootToHub(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
+    public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
         return roller.intakeCommand().alongWith(new WaitCommand(1).andThen(conveyer.runConveyerForwards())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
-    public static Command shootFromNeutral(HoodSubsystem hood, ShooterSubsystem shooter, RollerSubsystem roller, ConveyerSubsystem conveyer, KickerSubsystem kicker){
-        return shootToHub(roller, conveyer, shooter, kicker)
-            .alongWith(hood.driveHood(() -> Constants.HoodConstants.FROM_NEUTRAL_ANGLE, conveyer.isConveyerRunningSupplier()))
-            .alongWith(shooter.shoot(() -> Constants.ShooterConstants.FROM_NEUTRAL_VOLTAGE));
-    }
 
-    public static Command autoShootToHub(RollerSubsystem roller,
+    public static Command autoShootToTarget(RollerSubsystem roller,
                                         ConveyerSubsystem conveyer,
                                         CommandSwerveDrivetrain drivetrain,
                                         CommandXboxController xbox,
                                         double maxSpeed,
-                                        Supplier<Pose2d> hubPose,
+                                        Supplier<Pose2d> targetPose,
                                         SwerveRequest.FieldCentric drive,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
     {
-        return shootToHub(roller, conveyer, shooter, kicker).alongWith(drivetrain.applyRequest(() ->
+        return shootToPoint(roller, conveyer, shooter, kicker).alongWith(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-xbox.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getLeftX() * maxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed(hubPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
             ));
     }
 
