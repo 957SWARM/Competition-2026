@@ -11,9 +11,9 @@ import frc.robot.Constants.TargetingConstants;
 
 public class TargetingHelper {
     
-    static double[] voltage = {5, 7, 8, 8, 8}; 
-    static double[] angle = {0, 0.035, 0.5, 0.9, 1};
-    static double[] distancePoints = {0, 2.6, 4.2, 8, 16};
+    static double[] voltage = {5.5, 5.5, 5.5, 5.5, 6, 6.25, 6.5, 6.5, 7, 7}; 
+    static double[] angle = {0.05, 0.05, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.5};
+    static double[] distancePoints = {0, 1.52, 2.09, 2.55, 3.07, 3.55, 4.07, 4.5, 5.0, 300};
 
     public static String alliance = "Red";
 
@@ -28,6 +28,8 @@ public class TargetingHelper {
     public static double getExpectedHoodPosition(double distance){
         double w = calculateWeight(distance);
         int closest = getNearestPoint(distance);
+
+        System.out.println(closest);
         
         double targetAngle = (angle[closest] * (1 - w)) + (angle[closest + 1] * w);
         return targetAngle;
@@ -50,13 +52,13 @@ public class TargetingHelper {
     public static int getNearestPoint(double distance){
 
         if(distance < distancePoints[0])
-            return -1;
+            return 0;
 
-        for(int p = 0; p < distancePoints.length - 2; p++){
-            if(distancePoints[p] < distance)
-                return p;
+        for(int p = 1; p < distancePoints.length - 2; p++){
+            if(distancePoints[p] > distance)
+                return p-1;
         }
-        return -1;
+        return 0;
     }
 
     public static Rotation2d getAngleToGoalPose(Pose2d robotPose, Pose2d goalPose){

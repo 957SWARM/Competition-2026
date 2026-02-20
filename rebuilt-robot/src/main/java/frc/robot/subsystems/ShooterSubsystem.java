@@ -17,8 +17,9 @@ public class ShooterSubsystem extends SubsystemBase{
     TalonFX shooterLead = new TalonFX(ShooterConstants.SHOOTER_LEAD_ID);
     TalonFX shooterFollow = new TalonFX(ShooterConstants.SHOOTER_FOLLOW_ID);
 
-
     double voltageLead, voltageFollow;
+
+    public double incrementalShooterVolts = 8;
 
     public ShooterSubsystem(){
         voltageLead = 0;
@@ -35,12 +36,24 @@ public class ShooterSubsystem extends SubsystemBase{
 
     }
 
-    public Command shoot(DoubleSupplier supplier){
+    public Command shoot(DoubleSupplier voltage){
         return this.runOnce(() -> 
-            shooterLead.setVoltage(supplier.getAsDouble())
+            shooterLead.setVoltage(voltage.getAsDouble())
         );
     }
 
+    //DEBUGGING COMMANDS
 
+    public void increaseShooterVolts(){
+        if(incrementalShooterVolts < 12){
+            incrementalShooterVolts += 0.25;
+        }
+    }
+
+    public void decreaseShooterVolts(){
+        if (incrementalShooterVolts > 0){
+            incrementalShooterVolts -= 0.25;
+        }
+    }
 
 }
