@@ -6,6 +6,8 @@ import java.util.function.Supplier;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -47,7 +49,8 @@ public class Sequencing {
         return shootToPoint(roller, conveyer, shooter, kicker).alongWith(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-xbox.getLeftY() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getLeftX() * maxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(TargetingHelper.getAdjustedRotationSpeed(TargetingHelper.rotationWithOffSet(drivetrain.getCurrentPose(), (Pose2d) targetPose, xbox, drivetrain.getState().Speeds.vyMetersPerSecond, maxSpeed),
+                                                                                 TargetingHelper.getAngleToGoalPose(drivetrain.getCurrentPose().getRotation(), TargetingHelper.getPassTargetRotation2d(drivetrain.getCurrentPose()).getRotation()))) // Drive counterclockwise with negative X (left)
             ));
     }
 
