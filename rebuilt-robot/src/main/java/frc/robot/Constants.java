@@ -180,7 +180,7 @@ public class Constants {
         public static final double MIN = 0;
         public static final double MAX = 5;
         public static final double DEADBAND = 0;
-        public static final double KP = .1;
+        public static final double KP = .15;
     }
 
     public class PowerConstants{
