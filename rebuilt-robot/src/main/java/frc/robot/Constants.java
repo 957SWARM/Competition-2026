@@ -186,6 +186,9 @@ public class Constants {
         public static final double MAX = 5;
         public static final double DEADBAND = 0;
         public static final double KP = .15;
+        public static final double SPEED_SCALAR = 0.8;
+        public static final double DISTANCE_SCALAR = 1;
+        public static final double CORRECTION_SCALAR = 1;
     }
 
     public class PowerConstants{
