@@ -7,7 +7,32 @@
         {
           "type": "path",
           "data": {
-            "pathName": null
+            "pathName": "left1neutral.0"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left1neutral.1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Deploy Pivot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
           }
         }
       ]
@@ -15,5 +40,5 @@
   },
   "resetOdom": true,
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

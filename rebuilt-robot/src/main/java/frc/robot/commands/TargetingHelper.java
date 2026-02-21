@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TargetingConstants;
 
@@ -32,7 +33,7 @@ public class TargetingHelper {
         double w = calculateWeight(distance);
         int closest = getNearestPoint(distance);
 
-        System.out.println(closest);
+        //System.out.println(closest);
         
         double targetAngle = (angle[closest] * (1 - w)) + (angle[closest + 1] * w);
         return targetAngle;
@@ -156,5 +157,6 @@ public class TargetingHelper {
         }
         return targetPass;
     }
+
 
 }

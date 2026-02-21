@@ -24,18 +24,24 @@ public class ConveyerSubsystem extends SubsystemBase{
 
     public Command runConveyerForwards(){
         return this.run(() ->
-        conveyer.setVoltage(ConveyerConstants.FEED_VOLTAGE)
+            conveyer.setVoltage(ConveyerConstants.FEED_VOLTAGE)
         );
     }
 
     public Command stopConveyer(){
         return this.run(() ->
-        conveyer.setVoltage(0)
+            conveyer.setVoltage(0)
         );
     }
 
     public Command pulseConveyor(){
         return runConveyerForwards().withTimeout(2).andThen(stopConveyer().withTimeout(0.25));
+    }
+
+    public Command idleConveyer(){
+        return this.run(() ->
+            conveyer.setVoltage(ConveyerConstants.IDLE_FEED_VOLTAGE)
+        );
     }
 
     public BooleanSupplier isConveyerRunningSupplier(){

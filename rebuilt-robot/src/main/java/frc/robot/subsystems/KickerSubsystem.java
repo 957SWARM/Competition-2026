@@ -32,6 +32,12 @@ public class KickerSubsystem extends SubsystemBase {
         );
     }
 
+    public Command idleKicker(){
+        return this.run(() ->
+            kicker.setVoltage(ConveyerConstants.IDLE_KICK_VOLTAGE)
+        );
+    }
+
     public BooleanSupplier isKickerRunning(){
         return () -> kicker.get() != 0;
     }

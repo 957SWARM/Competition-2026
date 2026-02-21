@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import com.pathplanner.lib.path.PathPlannerPath;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
@@ -31,6 +32,7 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -57,7 +59,8 @@ public class RobotContainer {
   private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  //private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
+  private Command Left1Neutral;
 
   public final Field2d field = new Field2d();
 
@@ -84,14 +87,20 @@ public class RobotContainer {
   
   public RobotContainer() {
 
-    NamedCommands.registerCommand("Fire to hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
-    NamedCommands.registerCommand("To zone", null);
+    NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
+    NamedCommands.registerCommand("Intake", roller.intakeCommand());
+    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
+    NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
+    //NamedCommands.registerCommand("To zone", null);
 
-    // autoChooser = AutoBuilder.buildAutoChooser();
-    // SmartDashboard.putData("Auto Chooser", autoChooser);
+    new EventTrigger("Shoot").whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter).andThen(() -> System.out.println("Shoot")));
 
-    // autoChooser.addOption("OG auto", new InstantCommand());
+    Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
 
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    autoChooser.addOption("Left 1 Neutral", Left1Neutral);
 
     configureBindings();
   }
@@ -103,8 +112,8 @@ public class RobotContainer {
     //hood.setDefaultCommand(hood.driveHood(() -> hood.incrementalHoodPos, () -> true));
     shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVoltage()));
     //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVolts));
-    conveyer.setDefaultCommand(conveyer.stopConveyer()); 
-    kicker.setDefaultCommand(kicker.stopKicker());
+    conveyer.setDefaultCommand(conveyer.idleConveyer()); 
+    kicker.setDefaultCommand(kicker.idleKicker());
 
     drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
@@ -149,11 +158,10 @@ public class RobotContainer {
     xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVolts()));
     xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVolts()));
 
-    //auto = new PathPlannerAuto("first auto");
   }
 
   public Command getAutonomousCommand() {
-    return null;
+    return autoChooser.getSelected();
   }
 
   public void updateDrivebaseOdemetry(){
@@ -161,6 +169,7 @@ public class RobotContainer {
     //Working Megatag1 Code (More reliable, less accurate)
     if(LimelightHelpers.getTV("limelight")){
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+      //REMOVED FOR AUTO TESTING
       drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
     }
     
@@ -187,6 +196,10 @@ public class RobotContainer {
 
   public double getExpectedHoodPosition(){
     return TargetingHelper.getExpectedHoodPosition(getDistanceFromHub());
+  }
+
+  public CommandScheduler getCurrentCommand(){
+    return CommandScheduler.getInstance();
   }
   
 }

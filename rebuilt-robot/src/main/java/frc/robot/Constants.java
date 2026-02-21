@@ -72,7 +72,7 @@ public class Constants {
         
         public static final int INTAKE_ID = 17;
 
-        public static final double INTAKE_VOLTAGE = 8;
+        public static final double INTAKE_VOLTAGE = 10;
         public static final double EJECT_VOLTAGE = -3.0;
 
         public static final TalonFXSConfiguration rollerConfig = new TalonFXSConfiguration();
@@ -144,6 +144,9 @@ public class Constants {
 
         public static final double FEED_VOLTAGE = 11.5;
         public static final double KICK_VOLTAGE = 12;
+        public static final double IDLE_FEED_VOLTAGE = 2;
+        public static final double IDLE_KICK_VOLTAGE = -4;
+
 
         public static final int CONVEYER_ID = 18;
         public static final int KICKER_ID = 20;

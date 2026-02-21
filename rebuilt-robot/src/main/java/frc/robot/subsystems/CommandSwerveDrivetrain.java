@@ -320,6 +320,10 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
     public void configureAutoBuilder(){
         try{
+
+            //System.out.println("please build auto");
+
+
             var config = RobotConfig.fromGUISettings();
             AutoBuilder.configure(
                 () -> getState().Pose,
