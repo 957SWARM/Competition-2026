@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 public class TargetingHelper {
     
     static double[] voltage = 
-    {5.50, 5.50, 5.50, 5.50, 6.25, 6.25, 6.3, 6.50, 6.50, 7.00, 7.00}; 
+    {5.50, 5.50, 5.50, 5.50, 6.25, 6.25, 6.3, 6.50, 6.6, 7.00, 7.00}; 
     static double[] angle = 
-    {0.05, 0.05, 0.20, 0.25, 0.30, 0.35, 0.45, 0.40, 0.45, 0.50, 0.50};
+    {0.05, 0.05, 0.20, 0.25, 0.30, 0.35, 0.45, 0.40, 0.57, 0.60, 0.60};
     static double[] distancePoints = 
     {0.00, 1.52, 2.09, 2.55, 3.07, 3.55, 3.72, 4.07, 4.50, 5.00, 300};
 
@@ -62,7 +62,7 @@ public class TargetingHelper {
         if(distance < distancePoints[0])
             return 0;
 
-        for(int p = 1; p < distancePoints.length - 2; p++){
+        for(int p = 1; p < distancePoints.length; p++){
             if(distancePoints[p] > distance)
                 return p-1;
         }
@@ -190,7 +190,8 @@ public class TargetingHelper {
                                          Rotation2d.fromDegrees(currentPose.getRotation().getDegrees() + (xbox.getLeftX() * DriveConstants.M_ANGULAR_RATE))); 
         
         Rotation2d targetAngleCorrected = getAngleToGoalPose(currentPose.getRotation(),
-        Rotation2d.fromDegrees(getAngleToGoalPose(currentPose.getRotation(), getPassTargetRotation2d(currentPose).getRotation()).getDegrees() - (TargetingConstants.DISTANCE_SCALAR * (1/(distance*distance)) * TargetingConstants.SPEED_SCALAR * speedY * TargetingConstants.CORRECTION_SCALAR * 0.5 * getAngleToGoalPose(currentPose.getRotation(), futurePose2d.getRotation()).getDegrees())));
+        Rotation2d.fromDegrees(getAngleToGoalPose(currentPose.getRotation(), getPassTargetRotation2d(currentPose).getRotation()).getDegrees() -
+                                                 (TargetingConstants.DISTANCE_SCALAR * (1/(distance*distance)) * TargetingConstants.SPEED_SCALAR * speedY * TargetingConstants.CORRECTION_SCALAR * 0.5 * getAngleToGoalPose(currentPose.getRotation(), futurePose2d.getRotation()).getDegrees())));
 
         return targetAngleCorrected;
     }
