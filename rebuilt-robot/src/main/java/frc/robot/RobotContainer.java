@@ -56,7 +56,7 @@ public class RobotContainer {
   private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
-  //private final SendableChooser<Command> autoChooser;
+  private final SendableChooser<Command> autoChooser;
 
   public final Field2d field = new Field2d();
 
@@ -71,25 +71,22 @@ public class RobotContainer {
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
-
-
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    // public PathPlannerAuto auto = null;
+    public PathPlannerAuto auto = null;
   
   public RobotContainer() {
 
-    //autoChooser = AutoBuilder.buildAutoChooser();
-    //SmartDashboard.putData("Auto Chooser", autoChooser);
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
-    //autoChooser.addOption("OG auto", new InstantCommand());
+    autoChooser.addOption("OG auto", new InstantCommand());
 
     NamedCommands.registerCommand("Fire to hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
     NamedCommands.registerCommand("To zone", null);
