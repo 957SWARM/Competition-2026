@@ -11,9 +11,12 @@ import frc.robot.Constants.TargetingConstants;
 
 public class TargetingHelper {
     
-    static double[] voltage = {5.5, 5.5, 5.5, 5.5, 6.25, 6.25, 6.5, 6.5, 7, 7}; 
-    static double[] angle = {0.05, 0.05, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45, 0.5, 0.5};
-    static double[] distancePoints = {0, 1.52, 2.09, 2.55, 3.07, 3.55, 4.07, 4.5, 5.0, 300};
+    static double[] voltage = 
+    {5.50, 5.50, 5.50, 5.50, 6.25, 6.25, 6.3, 6.50, 6.50, 7.00, 7.00}; 
+    static double[] angle = 
+    {0.05, 0.05, 0.20, 0.25, 0.30, 0.35, 0.45, 0.40, 0.45, 0.50, 0.50};
+    static double[] distancePoints = 
+    {0.00, 1.52, 2.09, 2.55, 3.07, 3.55, 3.72, 4.07, 4.50, 5.00, 300};
 
     public static String alliance = "Red";
 
