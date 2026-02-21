@@ -34,6 +34,10 @@ public class ConveyerSubsystem extends SubsystemBase{
         );
     }
 
+    public Command pulseConveyor(){
+        return runConveyerForwards().withTimeout(1).andThen(stopConveyer().withTimeout(0.5));
+    }
+
     public BooleanSupplier isConveyerRunningSupplier(){
         return () -> conveyer.get() != 0;
     }
