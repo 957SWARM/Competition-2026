@@ -1,5 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -12,6 +16,7 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import frc.robot.generated.TunerConstants;
 
 public class Constants {
 
@@ -176,6 +181,7 @@ public class Constants {
         public static final double MAX = 5;
         public static final double DEADBAND = 0;
         public static final double KP = .1;
+        
     }
 
     public class PowerConstants{
@@ -194,5 +200,13 @@ public class Constants {
             mid_high.SupplyCurrentLimit = 40;
             high.SupplyCurrentLimit = 50;
         }
+    }
+
+    public class DriveConstants{
+
+        public static final double DRIVE_SPEED_SCALE = 0.125;
+
+        public static final double M_SPEED = DRIVE_SPEED_SCALE * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double M_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
     }
 }

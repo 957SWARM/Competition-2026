@@ -4,8 +4,12 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.units.measure.Angle;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.Constants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TargetingConstants;
 
@@ -63,6 +67,7 @@ public class TargetingHelper {
 
         Pose2d poseDifference = robotPose.relativeTo(goalPose);
         Rotation2d outputAngle = new Rotation2d(poseDifference.getX(), poseDifference.getY());
+    
         
         //System.out.println(outputAngle);
 
@@ -135,21 +140,36 @@ public class TargetingHelper {
 
     public static Pose2d getPassPose2d(Pose2d robotPose){
         Pose2d targetPass = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-        if(alliance == "Blue"){    
-            if(robotPose.getY() < 4){
-                targetPass = FieldConstants.BLUE_BOTTOM_PASSZONE;
+        if(robotPose.getX() > 4.3){    
+            if(alliance == "Blue"){    
+                if(robotPose.getY() < 4){
+                    targetPass = FieldConstants.BLUE_BOTTOM_PASSZONE;
+                } else {
+                    targetPass = FieldConstants.BLUE_TOP_PASSZONE;
+                }   
             } else {
-                targetPass = FieldConstants.BLUE_TOP_PASSZONE;
-            }   
-        } else {
-            if(robotPose.getY() < 4){
-                targetPass = FieldConstants.RED_BOTTOM_PASSZONE;
-            } else {
-                targetPass = FieldConstants.RED_TOP_PASSZONE;
+                if(robotPose.getY() < 4){
+                    targetPass = FieldConstants.RED_BOTTOM_PASSZONE;
+                } else {
+                    targetPass = FieldConstants.RED_TOP_PASSZONE;
+                }
+            
             }
-        
-        }
+        } else {
+            targetPass = getHubPose2d();
+        }    
         return targetPass;
+    }
+
+    public static Rotation2d rotationOffSet(Pose2d currentPose, XboxController xbox){
+        Pose2d futurePose2d = new Pose2d(currentPose.getX() + xbox.getRightY() * DriveConstants.M_SPEED,
+                                         currentPose.getY() + xbox.getRightX() * DriveConstants.M_SPEED,
+                                         Rotation2d.fromDegrees(currentPose.getRotation().getDegrees() + (xbox.getLeftX() * DriveConstants.M_ANGULAR_RATE))); 
+        
+        Rotation2d targetAngle = Rotation2d.fromDegrees(getAngleToGoalPose(currentPose,
+        getPassPose2d(currentPose)).getDegrees() + (0.5 * getAngleToGoalPose(currentPose, futurePose2d).getDegrees()));
+
+        return targetAngle;
     }
 
 }
