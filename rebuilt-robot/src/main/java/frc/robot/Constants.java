@@ -186,6 +186,9 @@ public class Constants {
         public static final double MAX = 5;
         public static final double DEADBAND = 0;
         public static final double KP = .1;
+        public static final double DISTANCE_SCALAR = 1;
+        public static final double CORRECTION_SCALAR = 1;
+        public static final double SPEED_SCALAR = 0.8;
         
     }
 
@@ -209,7 +212,7 @@ public class Constants {
 
     public class DriveConstants{
 
-        public static final double DRIVE_SPEED_SCALE = 0.125;
+        public static final double DRIVE_SPEED_SCALE = 0.5;
 
         public static final double M_SPEED = DRIVE_SPEED_SCALE * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double M_ANGULAR_RATE = RotationsPerSecond.of(0.75).in(RadiansPerSecond);

@@ -163,15 +163,15 @@ public class TargetingHelper {
         return targetPass;
     }
 
-    public static Rotation2d rotationOffSet(Pose2d currentPose, XboxController xbox){
+    public static Rotation2d rotationWithOffSet(Pose2d currentPose, XboxController xbox, double speedY, double distance){
         Pose2d futurePose2d = new Pose2d(currentPose.getX() + xbox.getRightY() * DriveConstants.M_SPEED,
                                          currentPose.getY() + xbox.getRightX() * DriveConstants.M_SPEED,
                                          Rotation2d.fromDegrees(currentPose.getRotation().getDegrees() + (xbox.getLeftX() * DriveConstants.M_ANGULAR_RATE))); 
         
-        Rotation2d targetAngle = Rotation2d.fromDegrees(getAngleToGoalPose(currentPose,
-        getPassPose2d(currentPose)).getDegrees() + (0.5 * getAngleToGoalPose(currentPose, futurePose2d).getDegrees()));
+        Rotation2d targetAngleCorrection = Rotation2d.fromDegrees(getAngleToGoalPose(currentPose,
+        getPassPose2d(currentPose)).getDegrees() - (TargetingConstants.DISTANCE_SCALAR * (1/(distance*distance)) * TargetingConstants.SPEED_SCALAR * speedY * TargetingConstants.CORRECTION_SCALAR * 0.5 * getAngleToGoalPose(currentPose, futurePose2d).getDegrees()));
 
-        return targetAngle;
+        return targetAngleCorrection;
     }
 
 }

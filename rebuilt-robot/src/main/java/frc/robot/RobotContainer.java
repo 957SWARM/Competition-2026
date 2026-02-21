@@ -190,4 +190,7 @@ public class RobotContainer {
     return TargetingHelper.getExpectedHoodPosition(getDistanceFromHub());
   }
   
+  public void getDriveVel() {
+    double speedY = drivetrain.getState().Speeds.vyMetersPerSecond;
+  }
 }
