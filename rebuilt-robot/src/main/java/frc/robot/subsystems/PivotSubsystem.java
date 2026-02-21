@@ -8,6 +8,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.Constants.PowerConstants;
 
@@ -47,26 +48,16 @@ public class PivotSubsystem extends SubsystemBase{
     }
 
     public Command stow(){
-        return this.run(() -> {
-            pivot.setControl(request.withPosition(PivotConstants.STOW_ANGLE));
-    });
+        return this.run(() -> 
+            pivot.setControl(request.withPosition(PivotConstants.STOW_ANGLE))
+        );
     }
 
-    
-
-
-
-    
-
-   /*  public Command agitate(){
+    public Command agitate(){
         return this.run(() -> 
-            
+            pivot.setControl(request.withPosition(PivotConstants.AGITATE_ANGLE))
         );
-    } */
-
-
-
-
-
+    }
 
 }
+

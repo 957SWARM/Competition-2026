@@ -10,12 +10,12 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.HoodConstants;
-
+import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
-
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
@@ -50,6 +50,10 @@ public class Sequencing {
                     .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
             ));
     }
+
+    // public static Command agitate(PivotSubsystem pivot){
+    //     return pivot.agitate().withTimeout(PivotConstants.AGITATION_TIME).andThen(pivot.deploy().withTimeout(0.1));
+    // }
 
 
 

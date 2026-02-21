@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.PivotConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
@@ -100,8 +101,10 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(getDistanceFromHub(drivetrain.getCurrentPose())), conveyer.isConveyerRunningSupplier()));
-    shooter.setDefaultCommand(shooter.shoot(() -> TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub(drivetrain.getCurrentPose()))));
+    hood.setDefaultCommand(hood.driveHood(() -> getExpectedHoodPosition(), conveyer.isConveyerRunningSupplier()));
+    //hood.setDefaultCommand(hood.driveHood(() -> hood.incrementalHoodPos, () -> true));
+    shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVoltage()));
+    //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVolts));
     conveyer.setDefaultCommand(conveyer.stopConveyer()); 
     kicker.setDefaultCommand(kicker.stopKicker());
 
@@ -114,9 +117,10 @@ public class RobotContainer {
             )
         );
 
-    xbox.y().toggleOnTrue(pivot.deploy());
-    xbox.a().toggleOnTrue(roller.intakeCommand());
-    xbox.start().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
+    xbox.leftBumper().toggleOnTrue(pivot.deploy());
+    xbox.rightBumper().toggleOnTrue(roller.intakeCommand());
+    xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
+    xbox.a().whileTrue(pivot.agitate().withTimeout(PivotConstants.AGITATION_TIME).andThen(pivot.deploy()));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
@@ -134,22 +138,23 @@ public class RobotContainer {
         );
 
     //Zero gyro, Set robot orientation in attempt to uncook MT2
-    xbox.leftBumper().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
+    xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
     xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
+
+    //DEBUGGING TRIGGERS
+    xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
+    xbox.povLeft().onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
+
+    xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVolts()));
+    xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVolts()));
 
     //auto = new PathPlannerAuto("first auto");
   }
 
   public Command getAutonomousCommand() {
     return null;
-  }
-
-  public double getDistanceFromHub(Pose2d robotPose){
-    double distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), TargetingHelper.getHubPose2d());
-    System.out.println(distance);
-    return distance;
   }
 
   public void updateDrivebaseOdemetry(){
@@ -170,6 +175,19 @@ public class RobotContainer {
     field.setRobotPose(drivetrain.getCurrentPose());
   }
  
+  public double getDistanceFromHub(){
+      double distance = 0;
+      distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), TargetingHelper.getHubPose2d());
+      //System.out.println(distance);
+      return distance;
+  }
 
+  public double getExpectedShooterVoltage(){
+    return TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub());
+  }
+
+  public double getExpectedHoodPosition(){
+    return TargetingHelper.getExpectedHoodPosition(getDistanceFromHub());
+  }
   
 }

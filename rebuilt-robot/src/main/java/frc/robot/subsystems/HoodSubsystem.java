@@ -24,7 +24,9 @@ public class HoodSubsystem extends SubsystemBase{
 
     boolean zeroed = false;
 
-    PIDController loop = new PIDController(HoodConstants.HOOD_KP, 0, 0);
+    PIDController loop = new PIDController(HoodConstants.HOOD_KP, HoodConstants.HOOD_KI, HoodConstants.HOOD_KD);
+
+    public double incrementalHoodPos = .5;
 
     public HoodSubsystem(){
         hood.configRemoteFeedbackFilter(HoodConstants.ENCODER_ID, RemoteSensorSource.CANCoder, 0);
@@ -34,14 +36,6 @@ public class HoodSubsystem extends SubsystemBase{
         hood.setInverted(true);
     }
 
-    public boolean isStopped(){
-        return Math.abs(hoodEncoder.getVelocity().getValueAsDouble()) < 0.01;
-    }
-
-    public boolean hasBeenZeroed(){
-        return zeroed;
-    }
-  
     public void homeHood(){
         hoodEncoder.setPosition(0);
     }
@@ -63,13 +57,37 @@ public class HoodSubsystem extends SubsystemBase{
     }
 
     public void setHoodPosition(double setpoint){
-        double output = loop.calculate(hoodEncoder.getPosition().getValueAsDouble(), setpoint * HoodConstants.MAX_HOOD_POS);
-        output = Math.min(output, 0.5);
-        output = Math.max(output, -0.5);
+        double output = loop.calculate(getHoodPosition(), setpoint * HoodConstants.MAX_HOOD_POS);
+        output = Math.min(output, HoodConstants.MAX_PERCENT_OUTPUT);
+        output = Math.max(output, -HoodConstants.MAX_PERCENT_OUTPUT);
         
         hood.set(ControlMode.PercentOutput, output);
     }
 
+    public double getHoodPosition(){
+        return hoodEncoder.getPosition().getValueAsDouble();
+    }
 
+    public boolean isStopped(){
+        return Math.abs(hoodEncoder.getVelocity().getValueAsDouble()) < 0.02;
+    }
+
+    public boolean hasBeenZeroed(){
+        return zeroed;
+    }
+
+    //DEBUG COMMANDS
+
+    public void increaseHoodPosition(){
+        if(incrementalHoodPos < 1){
+            incrementalHoodPos += 0.05;
+        }
+    }
+
+    public void decreaseHoodPosition(){
+        if (incrementalHoodPos > 0){
+            incrementalHoodPos -= 0.05;
+        }
+    }
 
 }

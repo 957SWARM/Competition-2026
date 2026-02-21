@@ -46,6 +46,9 @@ public class Constants {
 
         public static final double STOW_ANGLE = 0.2;
         public static final double DEPLOY_ANGLE = 0;
+        public static final double AGITATE_ANGLE = 0.1;
+
+        public static final double AGITATION_TIME = 0.5;
 
         static {
             config.Slot0.kS = Constants.PivotConstants.KS;
@@ -122,14 +125,16 @@ public class Constants {
         public static final int HOOD_ID = 16;
         public static final int ENCODER_ID = 14;
 
-        public static final double ZEROING_SPEED = -0.35;
+        public static final double ZEROING_SPEED = -0.2;
         public static final double ZERO_SPEED = 0.08;
 
         public static final double FROM_NEUTRAL_ANGLE = 30;
         public static final double IDLE_POSITION = 0.25;
 
         public static final double ZEROING_TIME = 0.1;
-        public static final double MAX_HOOD_POS = 2.8;
+        public static final double MAX_HOOD_POS = .33;
+
+        public static final double MAX_PERCENT_OUTPUT = 0.5;
 
         public static final double VELOCITY_TO_VOLTS = 1.0;
 
@@ -142,7 +147,7 @@ public class Constants {
 
     public class ConveyerConstants{
 
-        public static final double FEED_VOLTAGE = 5;
+        public static final double FEED_VOLTAGE = 11.5;
         public static final double KICK_VOLTAGE = 12;
 
         public static final int CONVEYER_ID = 18;
