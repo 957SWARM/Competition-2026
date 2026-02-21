@@ -120,7 +120,8 @@ public class RobotContainer {
     xbox.leftBumper().toggleOnTrue(pivot.deploy());
     xbox.rightBumper().toggleOnTrue(roller.intakeCommand());
     xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
-    xbox.a().whileTrue(pivot.agitate().withTimeout(PivotConstants.AGITATION_TIME).andThen(pivot.deploy()));
+    xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
+    xbox.a().toggleOnFalse(pivot.deploy());
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->

@@ -46,7 +46,7 @@ public class Constants {
 
         public static final double STOW_ANGLE = 0.2;
         public static final double DEPLOY_ANGLE = 0;
-        public static final double AGITATE_ANGLE = 0.1;
+        public static final double AGITATE_ANGLE = 0.175;
 
         public static final double AGITATION_TIME = 0.5;
 

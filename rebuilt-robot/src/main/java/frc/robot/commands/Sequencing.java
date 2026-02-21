@@ -30,7 +30,7 @@ public class Sequencing {
     }
 
     public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
-        return roller.intakeCommand().alongWith(new WaitCommand(1).andThen(conveyer.runConveyerForwards())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
+        return roller.intakeCommand().alongWith(new WaitCommand(1).andThen(conveyer.pulseConveyor().repeatedly())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
 
@@ -51,9 +51,10 @@ public class Sequencing {
             ));
     }
 
-    // public static Command agitate(PivotSubsystem pivot){
-    //     return pivot.agitate().withTimeout(PivotConstants.AGITATION_TIME).andThen(pivot.deploy().withTimeout(0.1));
-    // }
+    public static Command agitate(PivotSubsystem pivot){
+        return pivot.agitate().withTimeout(PivotConstants.AGITATION_TIME)
+            .andThen(pivot.deploy().withTimeout(PivotConstants.AGITATION_TIME));
+    }
 
 
 
