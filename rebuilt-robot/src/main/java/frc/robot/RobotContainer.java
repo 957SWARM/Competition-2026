@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
@@ -72,28 +73,26 @@ public class RobotContainer {
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
-
-
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-
-    // public PathPlannerAuto auto = null;
+    public PathPlannerAuto auto = null;
   
   public RobotContainer() {
 
-    //autoChooser = AutoBuilder.buildAutoChooser();
-    //SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    //autoChooser.addOption("OG auto", new InstantCommand());
-
     NamedCommands.registerCommand("Fire to hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
     NamedCommands.registerCommand("To zone", null);
+
+    // autoChooser = AutoBuilder.buildAutoChooser();
+    // SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // autoChooser.addOption("OG auto", new InstantCommand());
+
 
     configureBindings();
   }
