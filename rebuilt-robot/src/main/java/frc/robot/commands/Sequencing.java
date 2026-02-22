@@ -56,6 +56,20 @@ public class Sequencing {
             .andThen(pivot.deploy().withTimeout(PivotConstants.AGITATION_TIME));
     }
 
+    public static Command shootInAuto(RollerSubsystem roller,
+                                        ConveyerSubsystem conveyer,
+                                        CommandSwerveDrivetrain drivetrain,
+                                        CommandXboxController xbox,
+                                        double maxSpeed,
+                                        Supplier<Pose2d> targetPose,
+                                        SwerveRequest.FieldCentric drive,
+                                        KickerSubsystem kicker,
+                                        ShooterSubsystem shooter,
+                                        PivotSubsystem pivot){
+        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, targetPose, drive, kicker, shooter)
+        .alongWith(agitate(pivot));
+    }
+
 
 
 }

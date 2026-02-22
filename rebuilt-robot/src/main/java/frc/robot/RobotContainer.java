@@ -61,6 +61,7 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
   private Command Left1Neutral;
+  private Command Left1Depot;
 
   public final Field2d field = new Field2d();
 
@@ -93,14 +94,17 @@ public class RobotContainer {
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     //NamedCommands.registerCommand("To zone", null);
 
-    new EventTrigger("Shoot").whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter).andThen(() -> System.out.println("Shoot")));
+    new EventTrigger("Shoot")
+      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter, pivot));
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
+    Left1Depot = new PathPlannerAuto("Left 1 Depot");
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     autoChooser.addOption("Left 1 Neutral", Left1Neutral);
+    autoChooser.addOption("Left 1 Depot", Left1Depot);
 
     configureBindings();
   }
@@ -170,7 +174,7 @@ public class RobotContainer {
     if(LimelightHelpers.getTV("limelight")){
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
       //REMOVED FOR AUTO TESTING
-      drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+      //drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
     }
     
     //Megatag2 (Still iffy, somethings up with the rotation still)
