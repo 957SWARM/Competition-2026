@@ -20,7 +20,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     super();
     m_robotContainer = new RobotContainer();
-    int[] validIDs = {18, 19, 20, 12, 24, 25, 26, 27};
+    int[] validIDs = {2, 3, 4,5, 8, 9, 10, 11, 18, 19, 20, 12, 24, 25, 26, 27};
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
     LimelightHelpers.SetIMUMode("limelight", 4); // Seed internal IMU
 

@@ -12,6 +12,8 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public class Constants {
 
@@ -125,6 +127,7 @@ public class Constants {
 
         public static final double FROM_NEUTRAL_ANGLE = 30;
         public static final double IDLE_POSITION = 0.25;
+        public static final double MAX_IDLE_ANGLE = 0.5;
 
         public static final double ZEROING_TIME = 0.1;
         public static final double MAX_HOOD_POS = .33;
@@ -172,10 +175,19 @@ public class Constants {
         public static final Pose2d RED_HUB_LOCATION = new Pose2d(11.912, 4.024, Rotation2d.fromDegrees(0));
         public static final Pose2d BLUE_HUB_LOCATION = new Pose2d(4.628, 4.024, Rotation2d.fromDegrees(0));
 
-        public static final Pose2d BLUE_TOP_PASSZONE = new Pose2d(0, 0, null);
-        public static final Pose2d BLUE_BOTTOM_PASSZONE = new Pose2d(0, 0, null);
-        public static final Pose2d RED_TOP_PASSZONE = new Pose2d(0, 0, null);
-        public static final Pose2d RED_BOTTOM_PASSZONE = new Pose2d(0, 0, null);
+        public static final Pose2d BLUE_TOP_PASSZONE = new Pose2d(1.9, 6.6, new Rotation2d());
+        public static final Pose2d BLUE_BOTTOM_PASSZONE = new Pose2d(1.9, 1.5, new Rotation2d());
+        public static final Pose2d RED_TOP_PASSZONE = new Pose2d(14.5, 6.6, new Rotation2d());
+        public static final Pose2d RED_BOTTOM_PASSZONE = new Pose2d(14.5, 1.5, new Rotation2d());
+
+        public static Pose2d TARGET_HUB = BLUE_HUB_LOCATION;
+
+        static {
+            if(DriverStation.getAlliance().get() != Alliance.Blue){
+                TARGET_HUB = RED_HUB_LOCATION;
+            }
+            
+        }
     }
 
     public class TargetingConstants{

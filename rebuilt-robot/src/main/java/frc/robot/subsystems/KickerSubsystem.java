@@ -41,4 +41,9 @@ public class KickerSubsystem extends SubsystemBase {
     public BooleanSupplier isKickerRunning(){
         return () -> kicker.get() != 0;
     }
+
+    public BooleanSupplier isKickerFeeding(){
+        return () -> kicker.get() > 0;
+    }
+
 }

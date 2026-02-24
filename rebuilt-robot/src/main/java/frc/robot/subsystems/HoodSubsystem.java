@@ -45,12 +45,13 @@ public class HoodSubsystem extends SubsystemBase{
         );
     }
 
-    public Command driveHood(DoubleSupplier positionSupplier, BooleanSupplier conveyerSupplier){
+    public Command driveHood(DoubleSupplier positionSupplier, BooleanSupplier kickerSupplier){
         return this.run(() -> {
-            if(conveyerSupplier.getAsBoolean()){
+            if(kickerSupplier.getAsBoolean()){
                 setHoodPosition(positionSupplier.getAsDouble());
             } else {
-                setHoodPosition(positionSupplier.getAsDouble());
+                double setpoint = Math.min(positionSupplier.getAsDouble(), HoodConstants.MAX_IDLE_ANGLE);
+                setHoodPosition(setpoint);
             }
         }
         );

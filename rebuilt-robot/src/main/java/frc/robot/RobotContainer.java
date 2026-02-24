@@ -72,7 +72,7 @@ public class RobotContainer {
   private final ConveyerSubsystem conveyer = new ConveyerSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
 
-  CommandXboxController xbox = new CommandXboxController(0);
+  SwarmDriveController xbox = new SwarmDriveController(0, 2, 2);
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
@@ -112,7 +112,7 @@ public class RobotContainer {
   private void configureBindings() {
     pivot.setDefaultCommand(pivot.stow());
     roller.setDefaultCommand(roller.stopIntakeCommand());
-    hood.setDefaultCommand(hood.driveHood(() -> getExpectedHoodPosition(), conveyer.isConveyerRunningSupplier()));
+    hood.setDefaultCommand(hood.driveHood(() -> getExpectedHoodPosition(), kicker.isKickerFeeding()));
     //hood.setDefaultCommand(hood.driveHood(() -> hood.incrementalHoodPos, () -> true));
     shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVoltage()));
     //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVolts));
@@ -122,9 +122,9 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-xbox.getLeftY() * MaxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-xbox.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(-xbox.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
+                    .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed) // Drive left with negative X (left)
+                    .withRotationalRate(-xbox.getThetaLimitedInput() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -174,7 +174,7 @@ public class RobotContainer {
     if(LimelightHelpers.getTV("limelight")){
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
       //REMOVED FOR AUTO TESTING
-      //drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+      drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
     }
     
     //Megatag2 (Still iffy, somethings up with the rotation still)
@@ -187,19 +187,45 @@ public class RobotContainer {
     field.setRobotPose(drivetrain.getCurrentPose());
   }
  
-  public double getDistanceFromHub(){
+  public double getDistanceFromTarget(Pose2d target){
       double distance = 0;
-      distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), TargetingHelper.getHubPose2d());
+      distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), target);
       //System.out.println(distance);
       return distance;
   }
 
   public double getExpectedShooterVoltage(){
-    return TargetingHelper.getExpectedShooterVoltage(getDistanceFromHub());
+    return TargetingHelper.getExpectedShooterVoltage(getDistanceFromTarget(TargetingHelper.getHubPose2d()));
+  }
+
+  public Pose2d getShiftingTargetPose() {
+
+    if(DriverStation.getAlliance().get() == Alliance.Blue){
+      if(drivetrain.getCurrentPose().getX() > 4.5){
+        if(drivetrain.getCurrentPose().getY() > 4){
+          return FieldConstants.BLUE_TOP_PASSZONE;
+        } else {
+          return FieldConstants.BLUE_BOTTOM_PASSZONE;
+        }
+      } else {
+        return FieldConstants.BLUE_HUB_LOCATION;
+      }
+    } else {
+      if(drivetrain.getCurrentPose().getX() < 11.5){
+        if(drivetrain.getCurrentPose().getY() > 4){
+          return FieldConstants.RED_TOP_PASSZONE;
+        } else {
+          return FieldConstants.RED_BOTTOM_PASSZONE;
+        }
+      } else {
+        return FieldConstants.RED_HUB_LOCATION;
+      }
+    }
+
   }
 
   public double getExpectedHoodPosition(){
-    return TargetingHelper.getExpectedHoodPosition(getDistanceFromHub());
+    return TargetingHelper.getExpectedHoodPosition(getDistanceFromTarget(TargetingHelper.getHubPose2d()));
   }
 
   public CommandScheduler getCurrentCommand(){
