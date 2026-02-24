@@ -2,15 +2,19 @@ package frc.robot.commands;
 
 
 import java.util.function.Supplier;
+import java.util.function.ToDoubleFunction;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.Kinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.SwarmDriveController;
 import frc.robot.Constants.HoodConstants;
+import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
@@ -30,8 +34,8 @@ public class Sequencing {
                         .until(() -> hood.isStopped())).andThen(() -> hood.homeHood()));
     }
 
-    public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
-        return roller.intakeCommand().alongWith(new WaitCommand(1).andThen(conveyer.pulseConveyor().repeatedly())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
+    public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker, CommandSwerveDrivetrain drive){
+        return roller.intakeCommand(drive).alongWith(new WaitCommand(1).andThen(conveyer.pulseConveyor().repeatedly())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
 
@@ -45,7 +49,7 @@ public class Sequencing {
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
     {
-        return shootToPoint(roller, conveyer, shooter, kicker).alongWith(drivetrain.applyRequest(() ->
+        return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * maxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
@@ -70,6 +74,8 @@ public class Sequencing {
         return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, targetPose, drive, kicker, shooter)
         .alongWith(agitate(pivot));
     }
+
+    
 
 
 

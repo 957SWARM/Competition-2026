@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TargetingConstants;
+import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class TargetingHelper {
     
@@ -156,6 +157,13 @@ public class TargetingHelper {
         
         }
         return targetPass;
+    }
+
+    public static double getDriveSpeed(CommandSwerveDrivetrain drive){
+        double x = drive.getState().Speeds.vxMetersPerSecond;
+        double y = drive.getState().Speeds.vyMetersPerSecond;
+        
+        return Math.sqrt((x*x) + (y*y));
     }
 
 

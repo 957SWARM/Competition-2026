@@ -77,6 +77,8 @@ public class Constants {
         public static final double INTAKE_VOLTAGE = 8;
         public static final double EJECT_VOLTAGE = -3.0;
 
+        public static final double INTAKE_FROM_SPEED_SCALAR = 0.15;
+
         public static final TalonFXSConfiguration rollerConfig = new TalonFXSConfiguration();
         static {
             rollerConfig.Commutation.MotorArrangement = MotorArrangementValue.NEO_JST;
@@ -86,9 +88,9 @@ public class Constants {
     public class ShooterConstants{
 
         public static final double KS = 0;
-        public static final double KV = 0;
+        public static final double KV = 1;
         public static final double KA = 0;
-        public static final double KP = 0;
+        public static final double KP = 100;
         public static final double KI = 0;
         public static final double KD = 0;
 
@@ -163,6 +165,18 @@ public class Constants {
             kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         }
+    }
+
+    public class ClimberConstants{
+
+        public static final int CLIMBER_ID = 25;
+        public static final double CLIMB_L1_SPEED = 0.05;
+        public static final double HOME_CLIMBER_SPEED = -0.05;
+
+        public static final int CLIMBER_LIMITSWITCH_CHANNEL = 0;
+
+        public static final TalonFXConfiguration climberConfig = new TalonFXConfiguration();
+
     }
 
     public class ControllerConstants{

@@ -3,10 +3,12 @@ package frc.robot.subsystems;
 import java.util.function.DoubleSupplier;
 
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.PowerConstants;
@@ -18,6 +20,12 @@ public class ShooterSubsystem extends SubsystemBase{
     TalonFX shooterFollow = new TalonFX(ShooterConstants.SHOOTER_FOLLOW_ID);
 
     double voltageLead, voltageFollow;
+
+    VelocityVoltage m_velocityRequest = new VelocityVoltage(0);
+
+    VelocityVoltage request;
+
+    PIDController closedloop = new PIDController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
 
     public double incrementalShooterVolts = 8;
 
@@ -34,11 +42,13 @@ public class ShooterSubsystem extends SubsystemBase{
 
         shooterFollow.setControl(new Follower(shooterLead.getDeviceID(), MotorAlignmentValue.Opposed));
 
+        request = new VelocityVoltage(1).withSlot(0);
+
     }
 
     public Command shoot(DoubleSupplier voltage){
         return this.runOnce(() -> 
-            shooterLead.setVoltage(voltage.getAsDouble())
+            shooterLead.setControl(request.withVelocity(70))
         );
     }
 

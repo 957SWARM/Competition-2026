@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PowerConstants;
+import frc.robot.commands.TargetingHelper;
 @Logged
 public class RollerSubsystem extends SubsystemBase{
     
@@ -25,12 +26,9 @@ public class RollerSubsystem extends SubsystemBase{
         voltage = 0;
     }
 
-    public Command intakeCommand(){
-
-
-
+    public Command intakeCommand(CommandSwerveDrivetrain drive){
         return this.run(() -> 
-            intake.setVoltage(IntakeConstants.INTAKE_VOLTAGE)
+            intake.setVoltage(IntakeConstants.INTAKE_VOLTAGE + (IntakeConstants.INTAKE_FROM_SPEED_SCALAR * TargetingHelper.getDriveSpeed(drive)))
         );
     }
     
