@@ -1,12 +1,15 @@
 package frc.robot.commands;
 
 
+import static edu.wpi.first.units.Units.Rotation;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TargetingConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -66,15 +69,12 @@ public class TargetingHelper {
         return 0;
     }
 
-    public static Rotation2d getAngleToGoalPose(Pose2d robotPose, Pose2d goalPose){
+    public static Rotation2d getAngleToGoalPose(Rotation2d robotPose, Rotation2d goalPose){
 
-        Pose2d poseDifference = robotPose.relativeTo(goalPose);
-        Rotation2d outputAngle = new Rotation2d(poseDifference.getX(), poseDifference.getY());
-        
-        //System.out.println(outputAngle);
-
-        // REMOVE PLUS !!!!!!
-        return outputAngle;
+        Rotation2d poseDifference = robotPose.minus(goalPose);
+       
+    
+        return poseDifference;
     }
 
     public static double getDistanceToGoalPose(Pose2d robotPose, Pose2d goalPose){
@@ -111,8 +111,8 @@ public class TargetingHelper {
     }
 
     //Wrap-around code sponsered by ChatGPT
-    public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose){
-        double botHeading = botPose.getRotation().getDegrees();
+    public static double getRotationSpeed(Rotation2d goalPose, Rotation2d botPose){
+        double botHeading = botPose.getDegrees();
 
         double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getDegrees();
                 
@@ -164,6 +164,53 @@ public class TargetingHelper {
         double y = drive.getState().Speeds.vyMetersPerSecond;
         
         return Math.sqrt((x*x) + (y*y));
+    }
+
+    public static Pose2d getPassTarget2d(Pose2d currentPose){
+        Pose2d targetPass = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
+        if(currentPose.getX() > 4.3){
+            if(alliance == "Blue"){
+                if(currentPose.getY() < 4){
+                    targetPass = FieldConstants.BLUE_BOTTOM_PASSZONE;
+                } else {
+                    targetPass = FieldConstants.BLUE_TOP_PASSZONE;
+                }
+            } else {
+                if(currentPose.getY() < 4){
+                    targetPass = FieldConstants.RED_BOTTOM_PASSZONE;
+                } else {
+                    targetPass = FieldConstants.RED_TOP_PASSZONE;
+                }
+            }
+        } else {
+            targetPass = getHubPose2d();
+        }
+
+        return targetPass;
+    }
+
+    public static double getAdjustedRotationSpeed(Rotation2d correctedPose, Rotation2d botPose){
+        double botHeading = botPose.getDegrees();
+
+        double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, correctedPose).getDegrees();
+
+        double error = targetHeading - botHeading;
+        error = MathUtil.inputModulus(error, -180, 180);
+
+        double angularSpeed = TargetingHelper.boundedPLoop(TargetingConstants.MIN, TargetingConstants.MAX, 0, TargetingConstants.KP, error, TargetingConstants.DEADBAND);
+
+        return -angularSpeed;
+    }
+
+    public static Rotation2d rotationWithOffset(Pose2d currentPose, CommandXboxController xbox, double speedY, double speedX, double distance){
+        Pose2d futurePose2d = new Pose2d(currentPose.getX() + xbox.getLeftY() * DriveConstants.M_SPEED,
+                                        currentPose.getY() + xbox.getLeftX() * DriveConstants.M_SPEED,
+                                        Rotation2d.fromDegrees(currentPose.getRotation().getDegrees() + xbox.getRightX() * DriveConstants.M_ANGULAR_RATE));
+        Rotation2d targetAngleCorrected = getAngleToGoalPose(currentPose.getRotation(),
+                                                             Rotation2d.fromDegrees(getAngleToGoalPose(currentPose.getRotation(), getPassTarget2d(currentPose).getRotation()).getDegrees() - 
+                                                             (TargetingConstants.DISTANCE_SCALAR * (1/(distance*distance)) * TargetingConstants.SPEED_SCALAR * speedY * TargetingConstants.CORRECTION_SCALAR * 0.5 * getAngleToGoalPose(currentPose.getRotation(), futurePose2d.getRotation()).getDegrees())));
+                                                             
+        return targetAngleCorrected;
     }
 
 

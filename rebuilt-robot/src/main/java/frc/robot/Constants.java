@@ -1,5 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -14,6 +18,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.generated.TunerConstants;
 
 public class Constants {
 
@@ -204,12 +209,25 @@ public class Constants {
         }
     }
 
+    public class DriveConstants{
+
+        public static final double DRIVE_SPEED_SCALE = 0.5;
+        public static final double ANGLE_SPEED_SCALE = 0.75;
+
+        public static final double M_SPEED = DRIVE_SPEED_SCALE * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double M_ANGULAR_RATE = ANGLE_SPEED_SCALE * RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+    }
+
     public class TargetingConstants{
 
-        public static final double MIN = 0;
+        public static final double MIN = 0.5;
         public static final double MAX = 5;
-        public static final double DEADBAND = 0;
-        public static final double KP = .15;
+        public static final double DEADBAND = 1.25;
+        public static final double KP = .1;
+
+        public static final double DISTANCE_SCALAR = 1;
+        public static final double SPEED_SCALAR = 1;
+        public static final double CORRECTION_SCALAR = 1;
     }
 
     public class PowerConstants{
