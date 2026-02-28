@@ -52,7 +52,7 @@ public class Sequencing {
         return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * maxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose())) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose(), drivetrain.getState().Speeds.vyMetersPerSecond)) // Drive counterclockwise with negative X (left)
             ));
     }
 

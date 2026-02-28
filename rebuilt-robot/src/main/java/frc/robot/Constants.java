@@ -194,6 +194,10 @@ public class Constants {
         public static final Pose2d RED_TOP_PASSZONE = new Pose2d(14.5, 6.6, new Rotation2d());
         public static final Pose2d RED_BOTTOM_PASSZONE = new Pose2d(14.5, 1.5, new Rotation2d());
 
+        public static final Pose2d BLUE_CLIMB_LEFT = new Pose2d();
+        public static final Pose2d BLUE_CLIMB_RIGHT = new Pose2d();
+        
+
         public static Pose2d TARGET_HUB = BLUE_HUB_LOCATION;
 
         static {
@@ -210,6 +214,8 @@ public class Constants {
         public static final double MAX = 5;
         public static final double DEADBAND = 0;
         public static final double KP = .15;
+
+        public static final double kRa = 8;
     }
 
     public class PowerConstants{

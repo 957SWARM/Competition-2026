@@ -111,12 +111,13 @@ public class TargetingHelper {
     }
 
     //Wrap-around code sponsered by ChatGPT
-    public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose){
+    public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose, double speedY){
         double botHeading = botPose.getRotation().getDegrees();
 
         double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getDegrees();
+         
                 
-        double error = targetHeading - botHeading;
+        double error = targetHeading - botHeading + getAlphaAngleOffset(speedY).getDegrees();
         error = MathUtil.inputModulus(error, -180.0, 180.0);
 
         double angularSpeed = TargetingHelper.boundedPLoop(
@@ -164,6 +165,10 @@ public class TargetingHelper {
         double y = drive.getState().Speeds.vyMetersPerSecond;
         
         return Math.sqrt((x*x) + (y*y));
+    }
+
+    public static Rotation2d getAlphaAngleOffset(double speedY){
+        return Rotation2d.fromDegrees(TargetingConstants.kRa * speedY);
     }
 
 
