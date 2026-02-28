@@ -72,7 +72,7 @@ public class RobotContainer {
   private final ConveyerSubsystem conveyer = new ConveyerSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
 
-  SwarmDriveController xbox = new SwarmDriveController(0, 2, 4);
+  SwarmDriveController xbox = new SwarmDriveController(0, 2, 2);
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
@@ -171,7 +171,7 @@ public class RobotContainer {
   public void updateDrivebaseOdemetry(){
 
     //Working Megatag1 Code (More reliable, less accurate)
-    if(LimelightHelpers.getTV("limelight") && LimelightHelpers.getTA("limelight") > 0.105){
+    if(LimelightHelpers.getTV("limelight")){
       LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
       //REMOVED FOR AUTO TESTING
       drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
