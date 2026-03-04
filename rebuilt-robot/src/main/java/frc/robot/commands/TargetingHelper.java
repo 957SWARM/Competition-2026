@@ -9,12 +9,13 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.TargetingConstants;
+import frc.robot.enums.RobotData;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 
 public class TargetingHelper {
     
     static double[] voltage = 
-    {5.50, 5.50, 5.50, 5.50, 6.25, 6.25, 6.3, 6.50, 6.6, 7.00, 8, 7.00}; 
+    {2750, 2750, 2750, 2750, 3125, 3125, 3150, 3250, 3300, 3500, 4000, 3500}; 
     static double[] angle = 
     {0.05, 0.05, 0.20, 0.25, 0.30, 0.35, 0.45, 0.40, 0.57, 0.60, 0.75, 0.60};
     static double[] distancePoints = 
@@ -66,27 +67,6 @@ public class TargetingHelper {
         return 0;
     }
 
-    public static Rotation2d getAngleToGoalPose(Pose2d robotPose, Pose2d goalPose){
-
-        Pose2d poseDifference = robotPose.relativeTo(goalPose);
-        Rotation2d outputAngle = new Rotation2d(poseDifference.getX(), poseDifference.getY());
-        
-        //System.out.println(outputAngle);
-
-        // REMOVE PLUS !!!!!!
-        return outputAngle;
-    }
-
-    public static double getDistanceToGoalPose(Pose2d robotPose, Pose2d goalPose){
-        
-        Pose2d poseDifference = robotPose.relativeTo(goalPose);
-        double relativeX = poseDifference.getX();
-        double relativeY = poseDifference.getY();
-        double distance = Math.hypot(relativeX, relativeY);
-
-        return distance;
-    }
-
     //Prevents near-point correction
     public static double boundedPLoop(double min, double max, double setpoint, double kP, double measurement, double deadband){
         
@@ -111,13 +91,13 @@ public class TargetingHelper {
     }
 
     //Wrap-around code sponsered by ChatGPT
-    public static double getRotationSpeed(Pose2d goalPose, Pose2d botPose, double speedY){
-        double botHeading = botPose.getRotation().getDegrees();
+    public static double getRotationSpeed(){
+        double botHeading = RobotData.botPose.getRotation().getDegrees();
 
-        double targetHeading = TargetingHelper.getAngleToGoalPose(botPose, goalPose).getDegrees();
+        double targetHeading = RobotData.angleToTarget.getDegrees();
          
                 
-        double error = targetHeading - botHeading + getAlphaAngleOffset(speedY).getDegrees();
+        double error = targetHeading - botHeading + getAlphaAngleOffset(RobotData.yVelocity).getDegrees();
         error = MathUtil.inputModulus(error, -180.0, 180.0);
 
         double angularSpeed = TargetingHelper.boundedPLoop(
@@ -132,37 +112,11 @@ public class TargetingHelper {
         return -angularSpeed;
     }
 
-    public static Pose2d getHubPose2d(){
-        Pose2d targetHub = new Pose2d(FieldConstants.RED_HUB_LOCATION.getX(), FieldConstants.RED_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
-        if(DriverStation.getAlliance().get() == Alliance.Blue){
-            targetHub = new Pose2d(FieldConstants.BLUE_HUB_LOCATION.getX(), FieldConstants.BLUE_HUB_LOCATION.getY(), Rotation2d.fromDegrees(0));
-            alliance = "Blue";
-        }
-        return targetHub;
-    }
 
-    public static Pose2d getPassPose2d(Pose2d robotPose){
-        Pose2d targetPass = new Pose2d(0, 0, Rotation2d.fromDegrees(0));
-        if(alliance == "Blue"){    
-            if(robotPose.getY() < 4){
-                targetPass = FieldConstants.BLUE_BOTTOM_PASSZONE;
-            } else {
-                targetPass = FieldConstants.BLUE_TOP_PASSZONE;
-            }   
-        } else {
-            if(robotPose.getY() < 4){
-                targetPass = FieldConstants.RED_BOTTOM_PASSZONE;
-            } else {
-                targetPass = FieldConstants.RED_TOP_PASSZONE;
-            }
-        
-        }
-        return targetPass;
-    }
 
-    public static double getDriveSpeed(CommandSwerveDrivetrain drive){
-        double x = drive.getState().Speeds.vxMetersPerSecond;
-        double y = drive.getState().Speeds.vyMetersPerSecond;
+    public static double getDriveSpeed(){
+        double x = RobotData.xVelocity;
+        double y = RobotData.yVelocity;
         
         return Math.sqrt((x*x) + (y*y));
     }

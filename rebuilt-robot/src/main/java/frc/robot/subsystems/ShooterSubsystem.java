@@ -46,9 +46,9 @@ public class ShooterSubsystem extends SubsystemBase{
 
     }
 
-    public Command shoot(DoubleSupplier voltage){
+    public Command shoot(DoubleSupplier rpm){
         return this.runOnce(() -> 
-            shooterLead.setControl(request.withVelocity(70))
+            shooterLead.setControl(request.withVelocity(rpm.getAsDouble()))
         );
     }
 

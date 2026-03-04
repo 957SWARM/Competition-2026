@@ -28,7 +28,7 @@ public class RollerSubsystem extends SubsystemBase{
 
     public Command intakeCommand(CommandSwerveDrivetrain drive){
         return this.run(() -> 
-            intake.setVoltage(IntakeConstants.INTAKE_VOLTAGE + (IntakeConstants.INTAKE_FROM_SPEED_SCALAR * TargetingHelper.getDriveSpeed(drive)))
+            intake.setVoltage(IntakeConstants.INTAKE_VOLTAGE + (IntakeConstants.INTAKE_FROM_SPEED_SCALAR * TargetingHelper.getDriveSpeed()))
         );
     }
     

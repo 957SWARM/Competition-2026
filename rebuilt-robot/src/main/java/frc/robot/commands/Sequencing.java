@@ -44,7 +44,6 @@ public class Sequencing {
                                         CommandSwerveDrivetrain drivetrain,
                                         SwarmDriveController xbox,
                                         double maxSpeed,
-                                        Supplier<Pose2d> targetPose,
                                         SwerveRequest.FieldCentric drive,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
@@ -52,7 +51,7 @@ public class Sequencing {
         return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
                 drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * maxSpeed) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed(targetPose.get(), drivetrain.getCurrentPose(), drivetrain.getState().Speeds.vyMetersPerSecond)) // Drive counterclockwise with negative X (left)
+                    .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
             ));
     }
 
@@ -66,12 +65,11 @@ public class Sequencing {
                                         CommandSwerveDrivetrain drivetrain,
                                         SwarmDriveController xbox,
                                         double maxSpeed,
-                                        Supplier<Pose2d> targetPose,
                                         SwerveRequest.FieldCentric drive,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter,
                                         PivotSubsystem pivot){
-        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, targetPose, drive, kicker, shooter)
+        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, drive, kicker, shooter)
         .alongWith(agitate(pivot));
     }
 

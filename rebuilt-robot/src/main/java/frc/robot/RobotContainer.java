@@ -21,6 +21,7 @@ import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
+import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.controller.PIDController;
@@ -44,6 +45,7 @@ import frc.robot.Constants.PivotConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
+import frc.robot.enums.RobotData;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
@@ -90,12 +92,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Intake", roller.intakeCommand(drivetrain));
-    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
+    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     //NamedCommands.registerCommand("To zone", null);
 
     new EventTrigger("Shoot")
-      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter, pivot));
+      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter, pivot));
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
@@ -153,7 +155,7 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> getShiftingTargetPose(), drive, kicker, shooter));
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
@@ -186,16 +188,9 @@ public class RobotContainer {
 
     field.setRobotPose(drivetrain.getCurrentPose());
   }
- 
-  public double getDistanceFromTarget(Pose2d target){
-      double distance = 0;
-      distance = TargetingHelper.getDistanceToGoalPose(drivetrain.getCurrentPose(), target);
-      //System.out.println(distance);
-      return distance;
-  }
 
   public double getExpectedShooterVoltage(){
-    return TargetingHelper.getExpectedShooterVoltage(getDistanceFromTarget(getShiftingTargetPose()));
+    return TargetingHelper.getExpectedShooterVoltage(RobotData.distanceToTarget);
   }
 
   public Pose2d getShiftingTargetPose() {
@@ -225,11 +220,15 @@ public class RobotContainer {
   }
 
   public double getExpectedHoodPosition(){
-    return TargetingHelper.getExpectedHoodPosition(getDistanceFromTarget(getShiftingTargetPose()));
+    return TargetingHelper.getExpectedHoodPosition(RobotData.distanceToTarget);
   }
 
   public CommandScheduler getCurrentCommand(){
     return CommandScheduler.getInstance();
+  }
+
+  public SwerveDriveState getDriveState(){
+    return drivetrain.getState();
   }
   
 }
