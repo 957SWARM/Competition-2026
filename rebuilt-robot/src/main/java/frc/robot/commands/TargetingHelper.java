@@ -6,7 +6,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
@@ -184,7 +183,7 @@ public class TargetingHelper {
         return targetPass;
     }
 
-    public static Rotation2d rotationWithOffSet(Pose2d currentPose, Pose2d targetPose, CommandXboxController xbox, double speedY, double distance){
+    public static Rotation2d rotationWithOffSet(Pose2d currentPose, CommandXboxController xbox, double speedY, double distance){
         Pose2d futurePose2d = new Pose2d(currentPose.getX() + xbox.getRightY() * DriveConstants.M_SPEED,
                                          currentPose.getY() + xbox.getRightX() * DriveConstants.M_SPEED,
                                          Rotation2d.fromDegrees(currentPose.getRotation().getDegrees() + (xbox.getLeftX() * DriveConstants.M_ANGULAR_RATE))); 

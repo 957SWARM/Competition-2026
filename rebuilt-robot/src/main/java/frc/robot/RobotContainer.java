@@ -37,7 +37,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
@@ -55,7 +54,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 @SuppressWarnings("unused")
 public class RobotContainer {
   
-  private double MaxSpeed = DriveConstants.DRIVE_SPEED_SCALE * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+  private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
   //private final SendableChooser<Command> autoChooser;
@@ -85,7 +84,7 @@ public class RobotContainer {
   
   public RobotContainer() {
 
-    NamedCommands.registerCommand("Fire to hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
+    NamedCommands.registerCommand("Fire to hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
     NamedCommands.registerCommand("To zone", null);
 
     // autoChooser = AutoBuilder.buildAutoChooser();
@@ -141,7 +140,7 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, () -> TargetingHelper.getHubPose2d(), drive, kicker, shooter));
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
@@ -190,7 +189,4 @@ public class RobotContainer {
     return TargetingHelper.getExpectedHoodPosition(getDistanceFromHub());
   }
   
-  public void getDriveVel() {
-    double speedY = drivetrain.getState().Speeds.vyMetersPerSecond;
-  }
 }
