@@ -25,7 +25,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     super();
     m_robotContainer = new RobotContainer();
-    int[] validIDs = {2, 3, 4,5, 8, 9, 10, 11, 18, 19, 20, 12, 24, 25, 26, 27};
+    int[] validIDs = {2, 3, 4,5, 8, 9, 10, 11, 18, 19, 20, 12, 24, 25, 26, 27, 31, 32};
     LimelightHelpers.SetFiducialIDFiltersOverride("limelight", validIDs);
     LimelightHelpers.SetIMUMode("limelight", 4); // Seed internal IMU
 
@@ -97,7 +97,11 @@ public class Robot extends TimedRobot {
     DriverStation.Alliance alliance = DriverStation.getAlliance().get();
     Pose2d botPose = m_robotContainer.getDriveState().Pose;
 
-    RobotData.getInstance().updateTargetingInfo(TargetingPoint.getPointToTarget(alliance, botPose), botPose);
+
+    RobotData.getInstance().updateTargetingInfo(
+      TargetingPoint.getPointToTarget(alliance, botPose),
+      TargetingPoint.getClimbPoint(alliance, botPose),
+      botPose);
 
     RobotData.getInstance().updateDriveInfo(m_robotContainer.getDriveState());
   }

@@ -1,5 +1,9 @@
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
+
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotionMagicConfigs;
@@ -8,12 +12,14 @@ import com.ctre.phoenix6.configs.TalonFXSConfiguration;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorArrangementValue;
-
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import frc.robot.generated.TunerConstants;
 
 public class Constants {
 
@@ -175,6 +181,18 @@ public class Constants {
 
         public static final int CLIMBER_LIMITSWITCH_CHANNEL = 0;
 
+
+        public static final double FIELD_DRIVE = 0.5;
+
+        public static final double TRANSLATION_P = 0.05;
+        public static final double ROTATION_P = 0.005;
+        public static final double TRANSLATION_DEADBAND = 0.02;
+        public static final double ROTATION_DEADBAND = 0.5;
+        public static final double TRANSLATION_MIN = 0.35;
+        public static final double TRANSLATION_MAX = 1;
+        public static final double ROTATION_MIN = 0.05;
+        public static final double ROTATION_MAX = 0.5;
+
         public static final TalonFXConfiguration climberConfig = new TalonFXConfiguration();
 
     }
@@ -194,8 +212,11 @@ public class Constants {
         public static final Pose2d RED_TOP_PASSZONE = new Pose2d(14.5, 6.6, new Rotation2d());
         public static final Pose2d RED_BOTTOM_PASSZONE = new Pose2d(14.5, 1.5, new Rotation2d());
 
-        public static final Pose2d BLUE_CLIMB_LEFT = new Pose2d();
+        public static final Pose2d BLUE_CLIMB_LEFT = new Pose2d(0.748, 4.698, Rotation2d.fromDegrees(3.14159));
         public static final Pose2d BLUE_CLIMB_RIGHT = new Pose2d();
+        public static final Pose2d RED_CLIMB_LEFT = new Pose2d();
+        public static final Pose2d RED_CLIMB_RIGHT = new Pose2d();
+        public static final Pose2d DEBUG_DRIVE_POINT = new Pose2d(2.309, 3.861, Rotation2d.fromDegrees(0));
         
 
         public static Pose2d TARGET_HUB = BLUE_HUB_LOCATION;
@@ -234,5 +255,15 @@ public class Constants {
             mid_high.SupplyCurrentLimit = 40;
             high.SupplyCurrentLimit = 50;
         }
+    }
+
+    public class DriveConstants{
+
+        public static final double MAX_SPEED = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+        
+        public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
+            .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR * 0.1) // Add a 10% deadband
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     }
 }

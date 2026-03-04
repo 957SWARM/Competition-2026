@@ -4,15 +4,19 @@ package frc.robot.commands;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 
+import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.Kinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.SwarmDriveController;
+import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.Constants.PivotConstants;
@@ -44,12 +48,11 @@ public class Sequencing {
                                         CommandSwerveDrivetrain drivetrain,
                                         SwarmDriveController xbox,
                                         double maxSpeed,
-                                        SwerveRequest.FieldCentric drive,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
     {
         return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
-                drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
+                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * maxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
             ));
@@ -65,16 +68,22 @@ public class Sequencing {
                                         CommandSwerveDrivetrain drivetrain,
                                         SwarmDriveController xbox,
                                         double maxSpeed,
-                                        SwerveRequest.FieldCentric drive,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter,
                                         PivotSubsystem pivot){
-        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, drive, kicker, shooter)
+        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, kicker, shooter)
         .alongWith(agitate(pivot));
     }
 
-    
+    public static Command driveToPoint(CommandSwerveDrivetrain drivetrain, Pose2d target){
+        return new InstantCommand().alongWith(drivetrain.applyRequest(() ->
+            DriveConstants.drive.withVelocityX(TargetingHelper.boundedPLoop(ClimberConstants.TRANSLATION_MIN, ClimberConstants.TRANSLATION_MAX, target.getX(), ClimberConstants.TRANSLATION_P, drivetrain.getCurrentPose().getX(), ClimberConstants.TRANSLATION_DEADBAND) * DriveConstants.MAX_SPEED) // Drive forward with negative Y (forward)
+                .withVelocityY(TargetingHelper.boundedPLoop(ClimberConstants.TRANSLATION_MIN, ClimberConstants.TRANSLATION_MAX, target.getY(), ClimberConstants.TRANSLATION_P, drivetrain.getCurrentPose().getY(), ClimberConstants.TRANSLATION_DEADBAND) * DriveConstants.MAX_SPEED) // Drive left with negative X (left)
+                .withRotationalRate(TargetingHelper.boundedPLoop(ClimberConstants.ROTATION_MIN, ClimberConstants.ROTATION_MAX, target.getRotation().getDegrees(), ClimberConstants.ROTATION_P, drivetrain.getCurrentPose().getRotation().getDegrees(), ClimberConstants.ROTATION_DEADBAND) * DriveConstants.MAX_ANGULAR) // Drive counterclockwise with negative X (left)
+        ));
+    }
 
 
 
 }
+

@@ -20,6 +20,8 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 
+import java.lang.annotation.Target;
+
 import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
@@ -40,9 +42,11 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PivotConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
+import frc.robot.commands.DriveToClimbPoint;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.enums.RobotData;
@@ -74,13 +78,10 @@ public class RobotContainer {
   private final ConveyerSubsystem conveyer = new ConveyerSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
 
-  SwarmDriveController xbox = new SwarmDriveController(0, 2, 2);
+  SwarmDriveController xbox = new SwarmDriveController(0, 2, 4);
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
-  private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
@@ -92,12 +93,12 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Intake", roller.intakeCommand(drivetrain));
-    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
+    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     //NamedCommands.registerCommand("To zone", null);
 
     new EventTrigger("Shoot")
-      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter, pivot));
+      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter, pivot));
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
@@ -124,7 +125,7 @@ public class RobotContainer {
     drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
+                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed) // Drive left with negative X (left)
                     .withRotationalRate(-xbox.getThetaLimitedInput() * MaxAngularRate) // Drive counterclockwise with negative X (left)
             )
@@ -135,6 +136,7 @@ public class RobotContainer {
     xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
     xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
     xbox.a().toggleOnFalse(pivot.deploy());
+    xbox.x().whileTrue(new DriveToClimbPoint(drivetrain));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
@@ -155,7 +157,7 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, drive, kicker, shooter));
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter));
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
@@ -191,32 +193,6 @@ public class RobotContainer {
 
   public double getExpectedShooterVoltage(){
     return TargetingHelper.getExpectedShooterVoltage(RobotData.distanceToTarget);
-  }
-
-  public Pose2d getShiftingTargetPose() {
-
-    if(DriverStation.getAlliance().get() == Alliance.Blue){
-      if(drivetrain.getCurrentPose().getX() > 4.5){
-        if(drivetrain.getCurrentPose().getY() > 4){
-          return FieldConstants.BLUE_TOP_PASSZONE;
-        } else {
-          return FieldConstants.BLUE_BOTTOM_PASSZONE;
-        }
-      } else {
-        return FieldConstants.BLUE_HUB_LOCATION;
-      }
-    } else {
-      if(drivetrain.getCurrentPose().getX() < 11.5){
-        if(drivetrain.getCurrentPose().getY() > 4){
-          return FieldConstants.RED_TOP_PASSZONE;
-        } else {
-          return FieldConstants.RED_BOTTOM_PASSZONE;
-        }
-      } else {
-        return FieldConstants.RED_HUB_LOCATION;
-      }
-    }
-
   }
 
   public double getExpectedHoodPosition(){

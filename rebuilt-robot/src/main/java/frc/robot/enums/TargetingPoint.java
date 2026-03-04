@@ -14,7 +14,11 @@ public enum TargetingPoint {
     BLUE_BOTTOM(new Pose2d(1.9, 1.5, new Rotation2d())),
     BLUE_TOP(new Pose2d(1.9, 6.6, new Rotation2d())),
     RED_BOTTOM(new Pose2d(14.5, 1.5, new Rotation2d())),
-    RED_TOP(new Pose2d(14.5, 6.6, new Rotation2d()));
+    RED_TOP(new Pose2d(14.5, 6.6, new Rotation2d())),
+    BLUE_CLIMB_RIGHT(new Pose2d(2.31, 3.86, new Rotation2d())),
+    BLUE_CLIMB_LEFT(new Pose2d()),
+    RED_CLIMB_RIGHT(new Pose2d()),
+    RED_CLIMB_LEFT(new Pose2d());
 
     private final Pose2d point;
 
@@ -70,4 +74,7 @@ public enum TargetingPoint {
 
     }
     
+    public static TargetingPoint getClimbPoint(DriverStation.Alliance alliance, Pose2d botPose){
+        return BLUE_CLIMB_RIGHT;
+    }
 }

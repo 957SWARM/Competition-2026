@@ -16,7 +16,8 @@ public class RobotData {
 
     public static double distanceToTarget = 0;
     public static Rotation2d angleToTarget = new Rotation2d();
-    public static TargetingPoint target = TargetingPoint.BLUE_HUB;
+    public static TargetingPoint visiontarget = TargetingPoint.BLUE_HUB;
+    public static TargetingPoint climbTarget = TargetingPoint.BLUE_CLIMB_RIGHT;
     public static double xVelocity = 0;
     public static double yVelocity = 0;
     public static double thetaVelocity = 0;
@@ -33,10 +34,11 @@ public class RobotData {
         return instance;
     }
 
-    public void updateTargetingInfo(TargetingPoint point, Pose2d botPose){
-        target = point;
-        angleToTarget = target.getAngleFromPoint(botPose);
-        distanceToTarget = target.getDistanceToPoint(botPose);
+    public void updateTargetingInfo(TargetingPoint visionPoint, TargetingPoint climbPoint, Pose2d botPose){
+        visiontarget = visionPoint;
+        angleToTarget = visiontarget.getAngleFromPoint(botPose);
+        distanceToTarget = visiontarget.getDistanceToPoint(botPose);
+        climbTarget = climbPoint;
     }
 
     public void updateDriveInfo(SwerveDriveState states){
