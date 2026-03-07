@@ -1,14 +1,9 @@
 package frc.robot.enums;
 
-import java.lang.annotation.Target;
-
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.Constants.FieldConstants;
 
 public class RobotData {
     
@@ -22,6 +17,7 @@ public class RobotData {
     public static double yVelocity = 0;
     public static double thetaVelocity = 0;
     public static Pose2d botPose = new Pose2d();
+    public static Pose2d futurePose = new Pose2d();
 
     private RobotData(){
 

@@ -138,7 +138,7 @@ public class Constants {
         public static final double MAX_IDLE_ANGLE = 0.5;
 
         public static final double ZEROING_TIME = 0.1;
-        public static final double MAX_HOOD_POS = .33;
+        public static final double MAX_HOOD_POS = .37714;
 
         public static final double MAX_PERCENT_OUTPUT = 0.5;
 

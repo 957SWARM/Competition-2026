@@ -1,11 +1,8 @@
 package frc.robot.enums;
 
-import java.lang.annotation.Target;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.robot.Constants.FieldConstants;
 
 public enum TargetingPoint {
 
