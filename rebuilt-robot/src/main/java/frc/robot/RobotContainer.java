@@ -62,8 +62,8 @@ import frc.robot.subsystems.ShooterSubsystem;
 @SuppressWarnings("unused")
 public class RobotContainer {
   
-  private double MaxSpeed = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-  private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+  private double MaxSpeed = DriveConstants.MAX_SPEED; // kSpeedAt12Volts desired top speed
+  private double MaxAngularRate = DriveConstants.MAX_ANGULAR; // 3/4 of a rotation per second max angular velocity
 
   private final SendableChooser<Command> autoChooser;
   private Command Left1Neutral;
