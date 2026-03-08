@@ -81,13 +81,13 @@ public class HoodSubsystem extends SubsystemBase{
 
     public void increaseHoodPosition(){
         if(incrementalHoodPos < 1){
-            incrementalHoodPos += 0.05;
+            incrementalHoodPos += 0.025;
         }
     }
 
     public void decreaseHoodPosition(){
         if (incrementalHoodPos > 0){
-            incrementalHoodPos -= 0.05;
+            incrementalHoodPos -= 0.025;
         }
     }
 

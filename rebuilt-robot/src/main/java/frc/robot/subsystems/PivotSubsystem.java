@@ -58,5 +58,17 @@ public class PivotSubsystem extends SubsystemBase{
         );
     }
 
+    public Command trashCompact(){
+        return this.run(() ->
+            {if(Math.abs(PivotConstants.STOW_ANGLE - getPosition())>0.1){
+                pivot.setVoltage(1.75);
+            }
+            else{
+                pivot.setVoltage(0.25);
+            }}
+            
+        );
+    }
+
 }
 

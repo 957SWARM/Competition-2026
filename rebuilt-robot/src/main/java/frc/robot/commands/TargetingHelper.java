@@ -10,12 +10,12 @@ import frc.robot.enums.RobotData;
 
 public class TargetingHelper {
     
-    static double[] voltage = 
-    {2750, 2750, 2750, 2750, 3125, 3125, 3150, 3250, 3300, 3500, 4000, 3500}; 
+    static double[] velocity = 
+    {48.0, 48.0, 48.0, 50.0, 51.0, 53.0, 54.0, 55.0, 58.0, 58.0, 66.7, 66.7}; 
     static double[] angle = 
-    {0.05, 0.05, 0.20, 0.25, 0.30, 0.35, 0.45, 0.40, 0.57, 0.60, 0.75, 0.60};
+    {0.15, 0.15, 0.30, 0.35, 0.43, 0.47, 0.48, 0.50, 0.60, 0.60, 0.75, 0.75};
     static double[] distancePoints = 
-    {0.00, 1.52, 2.09, 2.55, 3.07, 3.55, 3.72, 4.07, 4.50, 5.00, 16, 300};
+    {0.00, 1.51, 2.02, 2.50, 3.05, 3.51, 3.70, 4.01, 4.50, 5.00, 16.0, 300};
 
     public static String alliance = "Red";
 
@@ -37,11 +37,11 @@ public class TargetingHelper {
         return targetAngle;
     }
 
-    public static double getExpectedShooterVoltage(double distance){
+    public static double getExpectedShooterVelocity(double distance){
         double w = calculateWeight(distance);
         int closest = getNearestPoint(distance);
         
-        double targetAngle = (voltage[closest] * (1 - w)) + (voltage[closest + 1] * w);
+        double targetAngle = (velocity[closest] * (1 - w)) + (velocity[closest + 1] * w);
         return targetAngle;
     }
 
@@ -88,12 +88,12 @@ public class TargetingHelper {
 
     //Wrap-around code sponsered by ChatGPT
     public static double getRotationSpeed(){
-        double botHeading = RobotData.botPose.getRotation().getDegrees();
+        double botHeading = RobotData.lookAheadPose.getRotation().getDegrees();
 
         double targetHeading = RobotData.angleToTarget.getDegrees();
          
                 
-        double error = targetHeading - botHeading + getAlphaAngleOffset(RobotData.yVelocity).getDegrees();
+        double error = targetHeading - botHeading;
         error = MathUtil.inputModulus(error, -180.0, 180.0);
 
         double angularSpeed = TargetingHelper.boundedPLoop(

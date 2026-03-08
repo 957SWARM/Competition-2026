@@ -47,7 +47,7 @@ public class Constants {
         public static final TalonFXConfiguration config = new TalonFXConfiguration();
         public static final CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
 
-        public static final double STOW_ANGLE = 0.2;
+        public static final double STOW_ANGLE = 0.224;
         public static final double DEPLOY_ANGLE = 0;
         public static final double AGITATE_ANGLE = 0.175;
 
@@ -80,7 +80,7 @@ public class Constants {
         
         public static final int INTAKE_ID = 17;
 
-        public static final double INTAKE_VOLTAGE = 8;
+        public static final double INTAKE_VOLTAGE = 7;
         public static final double EJECT_VOLTAGE = -3.0;
 
         public static final double INTAKE_FROM_SPEED_SCALAR = 0.15;
@@ -94,11 +94,11 @@ public class Constants {
     public class ShooterConstants{
 
         public static final double KS = 0;
-        public static final double KV = 1;
+        public static final double KV = 0.12;
         public static final double KA = 0;
-        public static final double KP = 100;
+        public static final double KP = 0;
         public static final double KI = 0;
-        public static final double KD = 0;
+        public static final double KD = 0.035;
 
         public static final int SHOOTER_LEAD_ID = 9;
         public static final int SHOOTER_FOLLOW_ID = 22;
@@ -130,7 +130,7 @@ public class Constants {
         public static final int HOOD_ID = 16;
         public static final int ENCODER_ID = 14;
 
-        public static final double ZEROING_SPEED = -0.2;
+        public static final double ZEROING_SPEED = -0.6;
         public static final double ZERO_SPEED = 0.08;
 
         public static final double FROM_NEUTRAL_ANGLE = 30;
@@ -146,18 +146,18 @@ public class Constants {
 
         public static final double HOOD_KP = 20;
         public static final double HOOD_KI = 0;
-        public static final double HOOD_KD = 0;
+        public static final double HOOD_KD = 0.3;
 
         public static final TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
     }
 
     public class ConveyerConstants{
 
-        public static final double FEED_VOLTAGE = 11.5;
-        public static final double KICK_VOLTAGE = 12;
-        public static final double IDLE_FEED_VOLTAGE = 2;
-        public static final double IDLE_KICK_VOLTAGE = -4;
-
+        public static final double FEED_VOLTAGE = 6;
+        public static final double KICK_VELOCITY = 75;
+        public static final double MAX_KICK_VELOCITY = 90;
+        public static final double IDLE_FEED_VOLTAGE = 1;
+        public static final double IDLE_KICK_VELOCITY = -33;
 
         public static final int CONVEYER_ID = 18;
         public static final int KICKER_ID = 20;
@@ -165,7 +165,21 @@ public class Constants {
         public static final TalonFXConfiguration conveyerConfig = new TalonFXConfiguration();
         public static final TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
 
+        public static final double KS = 0;
+        public static final double KV = 0.12;
+        public static final double KA = 0;
+        public static final double KP = 0.2;
+        public static final double KI = 0;
+        public static final double KD = 0.035;
+
         static {
+
+            kickerConfig.Slot0.kS = KS;
+            kickerConfig.Slot0.kV = KV;
+            kickerConfig.Slot0.kA = KA;
+            kickerConfig.Slot0.kP = KP;
+            kickerConfig.Slot0.kI = KI;
+            kickerConfig.Slot0.kD = KD;
             
             conveyerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
             kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
@@ -181,6 +195,8 @@ public class Constants {
 
         public static final int CLIMBER_LIMITSWITCH_CHANNEL = 0;
 
+        public static final int TOF_ID = 23;
+        public static final double TOF_THRESHOLD = 100.0;
 
         public static final double FIELD_DRIVE = 0.5;
 
@@ -231,10 +247,10 @@ public class Constants {
 
     public class TargetingConstants{
 
-        public static final double MIN = 0;
+        public static final double MIN = 0.25;
         public static final double MAX = 5;
-        public static final double DEADBAND = 0;
-        public static final double KP = .15;
+        public static final double DEADBAND = 0.2;
+        public static final double KP = 0.15;
 
         public static final double kRa = 8;
     }
@@ -261,9 +277,10 @@ public class Constants {
 
         public static final double MAX_SPEED = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
+        public static final double MAX_STRAFE_SHOOT_SPEED = 1.85;
         
         public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR * 0.1) // Add a 10% deadband
+            .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     }
 }

@@ -25,9 +25,7 @@ public class ShooterSubsystem extends SubsystemBase{
 
     VelocityVoltage request;
 
-    PIDController closedloop = new PIDController(ShooterConstants.KP, ShooterConstants.KI, ShooterConstants.KD);
-
-    public double incrementalShooterVolts = 8;
+    public double incrementalShooterVel = 45;
 
     public ShooterSubsystem(){
         voltageLead = 0;
@@ -46,6 +44,10 @@ public class ShooterSubsystem extends SubsystemBase{
 
     }
 
+    public double getShooterVelocity(){
+        return shooterLead.getVelocity().getValueAsDouble();
+    }
+
     public Command shoot(DoubleSupplier rpm){
         return this.runOnce(() -> 
             shooterLead.setControl(request.withVelocity(rpm.getAsDouble()))
@@ -54,15 +56,15 @@ public class ShooterSubsystem extends SubsystemBase{
 
     //DEBUGGING COMMANDS
 
-    public void increaseShooterVolts(){
-        if(incrementalShooterVolts < 12){
-            incrementalShooterVolts += 0.25;
+    public void increaseShooterVel(){
+        if(incrementalShooterVel < 80){
+            incrementalShooterVel += 1;
         }
     }
 
-    public void decreaseShooterVolts(){
-        if (incrementalShooterVolts > 0){
-            incrementalShooterVolts -= 0.25;
+    public void decreaseShooterVel(){
+        if (incrementalShooterVel > 0){
+            incrementalShooterVel -= 1;
         }
     }
 

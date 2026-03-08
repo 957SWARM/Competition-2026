@@ -74,4 +74,6 @@ public enum TargetingPoint {
     public static TargetingPoint getClimbPoint(DriverStation.Alliance alliance, Pose2d botPose){
         return BLUE_CLIMB_RIGHT;
     }
+
+    
 }

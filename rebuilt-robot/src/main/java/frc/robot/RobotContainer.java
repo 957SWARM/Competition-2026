@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -50,6 +51,7 @@ import frc.robot.commands.DriveToClimbPoint;
 import frc.robot.commands.Sequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.enums.RobotData;
+import frc.robot.enums.TargetingPoint;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
@@ -113,12 +115,12 @@ public class RobotContainer {
   }
 
   private void configureBindings() {
-    pivot.setDefaultCommand(pivot.stow());
+    pivot.setDefaultCommand(pivot.deploy());
     roller.setDefaultCommand(roller.stopIntakeCommand());
     hood.setDefaultCommand(hood.driveHood(() -> getExpectedHoodPosition(), kicker.isKickerFeeding()));
     //hood.setDefaultCommand(hood.driveHood(() -> hood.incrementalHoodPos, () -> true));
-    shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVoltage()));
-    //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVolts));
+    shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVelocity()));
+    //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVel));
     conveyer.setDefaultCommand(conveyer.idleConveyer()); 
     kicker.setDefaultCommand(kicker.idleKicker());
 
@@ -157,14 +159,14 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter));
+    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
     xbox.povLeft().onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
 
-    xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVolts()));
-    xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVolts()));
+    xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVel()));
+    xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVel()));
 
   }
 
@@ -175,11 +177,11 @@ public class RobotContainer {
   public void updateDrivebaseOdemetry(){
 
     //Working Megatag1 Code (More reliable, less accurate)
-    if(LimelightHelpers.getTV("limelight")){
-      LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
-      //REMOVED FOR AUTO TESTING
-      drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
-    }
+      if(LimelightHelpers.getTV("limelight") && LimelightHelpers.getTA("limelight") > 0.11){
+        LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
+        //REMOVED FOR AUTO TESTING
+        drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+      }
     
     //Megatag2 (Still iffy, somethings up with the rotation still)
     // LimelightHelpers.SetRobotOrientation("limelight", drivetrain.getCurrentPose().getRotation().getDegrees(), 0, 0, 0, 0, 0);
@@ -191,8 +193,8 @@ public class RobotContainer {
     field.setRobotPose(drivetrain.getCurrentPose());
   }
 
-  public double getExpectedShooterVoltage(){
-    return TargetingHelper.getExpectedShooterVoltage(RobotData.distanceToTarget);
+  public double getExpectedShooterVelocity(){
+    return TargetingHelper.getExpectedShooterVelocity(RobotData.distanceToTarget);
   }
 
   public double getExpectedHoodPosition(){
@@ -205,6 +207,10 @@ public class RobotContainer {
 
   public SwerveDriveState getDriveState(){
     return drivetrain.getState();
+  }
+
+  public double getDistanceToHub(){
+    return RobotData.distanceToTarget;
   }
   
 }

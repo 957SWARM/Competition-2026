@@ -2,6 +2,7 @@ package frc.robot.enums;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 
@@ -17,7 +18,7 @@ public class RobotData {
     public static double yVelocity = 0;
     public static double thetaVelocity = 0;
     public static Pose2d botPose = new Pose2d();
-    public static Pose2d futurePose = new Pose2d();
+    public static Pose2d lookAheadPose;
 
     private RobotData(){
 
@@ -42,6 +43,9 @@ public class RobotData {
         yVelocity = states.Speeds.vyMetersPerSecond;
         thetaVelocity = states.Speeds.omegaRadiansPerSecond;
         botPose = states.Pose;
+
+        new Rotation2d();
+        lookAheadPose = new Pose2d(states.Pose.getX() + xVelocity, states.Pose.getY() + yVelocity, Rotation2d.fromDegrees(states.Pose.getRotation().getDegrees() + thetaVelocity));
     }
     
 

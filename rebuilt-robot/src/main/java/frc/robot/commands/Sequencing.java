@@ -1,6 +1,8 @@
 package frc.robot.commands;
 
 
+import com.ctre.phoenix6.swerve.SwerveRequest;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -29,7 +31,7 @@ public class Sequencing {
     }
 
     public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker, CommandSwerveDrivetrain drive){
-        return roller.intakeCommand(drive).alongWith(new WaitCommand(1).andThen(conveyer.pulseConveyor().repeatedly())).alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
+        return roller.intakeCommand(drive).alongWith(new WaitCommand(0).andThen(conveyer.runConveyerForwards()).alongWith(kicker.runKicker()));//.alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
 
@@ -42,8 +44,8 @@ public class Sequencing {
                                         ShooterSubsystem shooter)
     {
         return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
-                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * maxSpeed) // Drive forward with negative Y (forward)
-                    .withVelocityY(-xbox.getXLimitedInput() * maxSpeed) // Drive left with negative X (left)
+                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
+                    .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
                     .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
             ));
     }
