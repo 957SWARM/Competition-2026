@@ -94,7 +94,7 @@ public class RobotContainer {
   public RobotContainer() {
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
-    NamedCommands.registerCommand("Intake", roller.intakeCommand(drivetrain));
+    NamedCommands.registerCommand("Intake", roller.intakeCommand());
     NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     //NamedCommands.registerCommand("To zone", null);
@@ -135,7 +135,7 @@ public class RobotContainer {
         );
 
     xbox.leftBumper().toggleOnTrue(pivot.stow());
-    xbox.rightBumper().toggleOnTrue(roller.intakeCommand(drivetrain));
+    xbox.rightBumper().toggleOnTrue(roller.intakeCommand());
     xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
     xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
     xbox.a().toggleOnFalse(pivot.deploy());
@@ -144,7 +144,8 @@ public class RobotContainer {
             .withDeadband(DriveConstants.MAX_SPEED * 0.1)
             .withTargetDirection(Rotation2d.fromDegrees(Math.round(RobotData.botPose.getRotation().getDegrees() / 45.0) * 45.0))
             .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
-            .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)));
+            .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
+            .withHeadingPID(10, 0, 0)));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
@@ -166,7 +167,9 @@ public class RobotContainer {
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
     new Trigger((xbox.rightTrigger().and(() -> !Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
-    new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
+    //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
+    new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoShootOnMove(roller, conveyer, drivetrain, xbox, kicker, shooter));
+
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));

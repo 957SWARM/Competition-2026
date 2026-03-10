@@ -45,7 +45,7 @@ public class RobotData {
         botPose = states.Pose;
 
         new Rotation2d();
-        lookAheadPose = new Pose2d(states.Pose.getX() + xVelocity, states.Pose.getY() + yVelocity, Rotation2d.fromDegrees(states.Pose.getRotation().getDegrees() + thetaVelocity));
+        lookAheadPose = new Pose2d(states.Pose.getX() - xVelocity, states.Pose.getY() - yVelocity, Rotation2d.fromDegrees(states.Pose.getRotation().getDegrees() + thetaVelocity));
     }
     
 

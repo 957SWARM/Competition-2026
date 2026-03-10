@@ -36,8 +36,8 @@ public class Sequencing {
                         .until(() -> hood.isStopped())).andThen(() -> hood.homeHood()));
     }
 
-    public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker, CommandSwerveDrivetrain drive){
-        return roller.intakeCommand(drive).alongWith(new WaitCommand(0).andThen(conveyer.runConveyerForwards()).alongWith(kicker.runKicker()));//.alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
+    public static Command shootToPoint(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker){
+        return roller.intakeCommand().alongWith(new WaitCommand(0).andThen(conveyer.runConveyerForwards()).alongWith(kicker.runKicker()));//.alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
     public static boolean isAlignedToHub() {
@@ -69,7 +69,7 @@ public class Sequencing {
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter) {
 
-        return shootToPoint(roller, conveyer, shooter, kicker, drivetrain)
+        return shootToPoint(roller, conveyer, shooter, kicker)
             .alongWith(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
 
     }
@@ -90,6 +90,15 @@ public class Sequencing {
                                         ShooterSubsystem shooter)
     {
         return autoAlignAndDrive(drivetrain, xbox).until(() -> isAlignedToHub()).andThen(autoShootAndPlant(roller, conveyer, drivetrain, kicker, shooter));
+    }
+
+    public static Command autoShootOnMove(RollerSubsystem roller,
+                                        ConveyerSubsystem conveyer,
+                                        CommandSwerveDrivetrain drivetrain,
+                                        SwarmDriveController xbox,
+                                        KickerSubsystem kicker,
+                                        ShooterSubsystem shooter){
+        return autoAlignAndDrive(drivetrain, xbox).alongWith(shootToPoint(roller, conveyer, shooter, kicker));
     }
 
     public static Command agitate(PivotSubsystem pivot){

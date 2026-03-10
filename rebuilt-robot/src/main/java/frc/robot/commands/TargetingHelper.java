@@ -11,7 +11,7 @@ import frc.robot.enums.RobotData;
 public class TargetingHelper {
     
     static double[] velocity = 
-    {47.0, 47.0, 47.0, 49.0, 50.0, 52.0, 53.0, 54.0, 57.0, 57.0, 65.7, 65.7}; 
+    {47.0, 47.0, 47.0, 49.0, 50.0, 53.0, 54.0, 55.0, 57.0, 57.0, 65.7, 65.7}; 
     static double[] angle = 
     {0.10, 0.10, 0.25, 0.30, 0.38, 0.42, 0.43, 0.45, 0.55, 0.55, 0.70, 0.70};
     static double[] distancePoints = 
