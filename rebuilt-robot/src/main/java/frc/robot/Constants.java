@@ -249,10 +249,12 @@ public class Constants {
 
         public static final double MIN = 0.25;
         public static final double MAX = 5;
-        public static final double DEADBAND = 0.2;
+        public static final double DEADBAND = 0.2; //FOR BOUNDED P LOOP
         public static final double KP = 0.15;
 
         public static final double kRa = 8;
+
+        public static final double TARGETING_DEADBAND = 5; //DEGREES
     }
 
     public class PowerConstants{
@@ -282,5 +284,9 @@ public class Constants {
         public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR * 0.01) // Add a 10% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+
+        public static final SwerveRequest.FieldCentricFacingAngle drive45 = new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(MAX_SPEED * 0.1).withTargetDirection(null)
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     }
 }

@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,9 +10,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.SwarmDriveController;
 import frc.robot.Constants.ClimberConstants;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.Constants.TargetingConstants;
+import frc.robot.enums.RobotData;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
 import frc.robot.subsystems.HoodSubsystem;
@@ -43,11 +47,30 @@ public class Sequencing {
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
     {
-        return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
+        //IF ON TARGET AND NOT MOVING, LOCK WHEELS AND SHOOT
+        if(Math.abs(RobotData.angleToTarget.getDegrees()) < TargetingConstants.TARGETING_DEADBAND 
+        && Math.abs(RobotData.xVelocity) < 0.1 
+        && Math.abs(RobotData.yVelocity) < 0.1){
+            return shootToPoint(roller, conveyer, shooter, kicker, drivetrain)
+            .alongWith(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+        }
+        //IF ON TARGET AND MOVING, AIM AND SHOOT
+        else if (Math.abs(RobotData.angleToTarget.getDegrees()) < TargetingConstants.TARGETING_DEADBAND){
+            return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
                 DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
                     .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
                     .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
             ));
+        }
+        //IF NOT ON TARGET, AIM
+        else {
+            return drivetrain.applyRequest(() ->
+                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
+                    .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
+                    .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
+            );
+        }
+        
     }
 
     public static Command agitate(PivotSubsystem pivot){

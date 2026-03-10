@@ -107,6 +107,7 @@ public class RobotContainer {
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
+    SmartDashboard.putBoolean("Debug Mode", false);
 
     autoChooser.addOption("Left 1 Neutral", Left1Neutral);
     autoChooser.addOption("Left 1 Depot", Left1Depot);
@@ -139,6 +140,11 @@ public class RobotContainer {
     xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
     xbox.a().toggleOnFalse(pivot.deploy());
     xbox.x().whileTrue(new DriveToClimbPoint(drivetrain));
+    xbox.y().whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(DriveConstants.MAX_SPEED * 0.1)
+            .withTargetDirection(Rotation2d.fromDegrees(Math.round(RobotData.botPose.getRotation().getDegrees() / 45.0) * 45.0))
+            .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
+            .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
