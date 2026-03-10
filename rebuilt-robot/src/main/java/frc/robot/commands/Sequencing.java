@@ -6,6 +6,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.SwarmDriveController;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.commands.TargetingHelper;
 
 public class Sequencing {
     
@@ -38,39 +40,56 @@ public class Sequencing {
         return roller.intakeCommand(drive).alongWith(new WaitCommand(0).andThen(conveyer.runConveyerForwards()).alongWith(kicker.runKicker()));//.alongWith(new WaitCommand(1).andThen(kicker.runKicker()));
     }
 
+    public static boolean isAlignedToHub() {
+        if(Math.abs(RobotData.angleToTarget.getDegrees() - RobotData.botPose.getRotation().getDegrees()) < TargetingConstants.TARGETING_DEADBAND 
+        && Math.abs(RobotData.xVelocity) < 0.1 
+        && Math.abs(RobotData.yVelocity) < 0.1
+        && Math.abs(RobotData.thetaVelocity) < 0.04){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public static boolean isDriving(SwarmDriveController xbox){
+        if(Math.abs(xbox.getXLimitedInput()) > 0.1 
+        && Math.abs(xbox.getYLimitedInput()) > 0.1
+        ){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public static Command autoShootAndPlant(RollerSubsystem roller,
+                                        ConveyerSubsystem conveyer,
+                                        CommandSwerveDrivetrain drivetrain,
+                                        KickerSubsystem kicker,
+                                        ShooterSubsystem shooter) {
+
+        return shootToPoint(roller, conveyer, shooter, kicker, drivetrain)
+            .alongWith(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
+
+    }
+
+    public static Command autoAlignAndDrive(CommandSwerveDrivetrain drivetrain, SwarmDriveController xbox)
+    {
+        return drivetrain.applyRequest(() ->
+                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
+                    .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
+                    .withRotationalRate(TargetingHelper.getRotationSpeed()));
+    }
 
     public static Command autoShootToTarget(RollerSubsystem roller,
                                         ConveyerSubsystem conveyer,
                                         CommandSwerveDrivetrain drivetrain,
                                         SwarmDriveController xbox,
-                                        double maxSpeed,
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter)
     {
-        //IF ON TARGET AND NOT MOVING, LOCK WHEELS AND SHOOT
-        if(Math.abs(RobotData.angleToTarget.getDegrees()) < TargetingConstants.TARGETING_DEADBAND 
-        && Math.abs(RobotData.xVelocity) < 0.1 
-        && Math.abs(RobotData.yVelocity) < 0.1){
-            return shootToPoint(roller, conveyer, shooter, kicker, drivetrain)
-            .alongWith(drivetrain.applyRequest(() -> new SwerveRequest.SwerveDriveBrake()));
-        }
-        //IF ON TARGET AND MOVING, AIM AND SHOOT
-        else if (Math.abs(RobotData.angleToTarget.getDegrees()) < TargetingConstants.TARGETING_DEADBAND){
-            return shootToPoint(roller, conveyer, shooter, kicker, drivetrain).alongWith(drivetrain.applyRequest(() ->
-                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
-                    .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
-            ));
-        }
-        //IF NOT ON TARGET, AIM
-        else {
-            return drivetrain.applyRequest(() ->
-                DriveConstants.drive.withVelocityX(-xbox.getYLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive forward with negative Y (forward)
-                    .withVelocityY(-xbox.getXLimitedInput() * DriveConstants.MAX_STRAFE_SHOOT_SPEED) // Drive left with negative X (left)
-                    .withRotationalRate(TargetingHelper.getRotationSpeed()) // Drive counterclockwise with negative X (left)
-            );
-        }
-        
+        return autoAlignAndDrive(drivetrain, xbox).until(() -> isAlignedToHub()).andThen(autoShootAndPlant(roller, conveyer, drivetrain, kicker, shooter));
     }
 
     public static Command agitate(PivotSubsystem pivot){
@@ -86,7 +105,7 @@ public class Sequencing {
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter,
                                         PivotSubsystem pivot){
-        return autoShootToTarget(roller, conveyer, drivetrain, xbox, maxSpeed, kicker, shooter)
+        return autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter)
         .alongWith(agitate(pivot));
     }
 

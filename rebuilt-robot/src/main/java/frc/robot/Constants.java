@@ -146,7 +146,7 @@ public class Constants {
 
         public static final double HOOD_KP = 20;
         public static final double HOOD_KI = 0;
-        public static final double HOOD_KD = 0.3;
+        public static final double HOOD_KD = 0.25;
 
         public static final TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
     }
@@ -254,7 +254,7 @@ public class Constants {
 
         public static final double kRa = 8;
 
-        public static final double TARGETING_DEADBAND = 5; //DEGREES
+        public static final double TARGETING_DEADBAND = 1.5; //DEGREES
     }
 
     public class PowerConstants{

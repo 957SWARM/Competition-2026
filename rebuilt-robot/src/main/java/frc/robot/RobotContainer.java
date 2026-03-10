@@ -95,7 +95,7 @@ public class RobotContainer {
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Intake", roller.intakeCommand(drivetrain));
-    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter));
+    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     //NamedCommands.registerCommand("To zone", null);
 
@@ -134,7 +134,7 @@ public class RobotContainer {
             )
         );
 
-    xbox.leftBumper().toggleOnTrue(pivot.deploy());
+    xbox.leftBumper().toggleOnTrue(pivot.stow());
     xbox.rightBumper().toggleOnTrue(roller.intakeCommand(drivetrain));
     xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
     xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
@@ -165,7 +165,8 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    xbox.rightTrigger().whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
+    new Trigger((xbox.rightTrigger().and(() -> !Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
+    new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
 
     //DEBUGGING TRIGGERS
     xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
@@ -217,6 +218,10 @@ public class RobotContainer {
 
   public double getDistanceToHub(){
     return RobotData.distanceToTarget;
+  }
+
+  public double getAngleToHub(){
+    return RobotData.angleToTarget.getDegrees();
   }
   
 }
