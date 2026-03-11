@@ -1,9 +1,11 @@
 package frc.robot;
 
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
+@Logged
 public class SwarmDriveController extends CommandXboxController {
     
     SlewRateLimiter slewX;
@@ -35,4 +37,11 @@ public class SwarmDriveController extends CommandXboxController {
         slewY.reset(0);
         slewTheta.reset(0);
     }
+
+    public double getAngleOfMotion(){
+    double x = this.getLeftX();
+    double y = -this.getLeftY();
+    double angle = Math.atan2(x, y);
+    return angle;
+  }
 }

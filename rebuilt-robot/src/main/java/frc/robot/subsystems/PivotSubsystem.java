@@ -70,5 +70,14 @@ public class PivotSubsystem extends SubsystemBase{
         );
     }
 
+    public boolean isDeployed(){
+        if(pivot.getClosedLoopReference().getValueAsDouble() == PivotConstants.DEPLOY_ANGLE){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 }
 

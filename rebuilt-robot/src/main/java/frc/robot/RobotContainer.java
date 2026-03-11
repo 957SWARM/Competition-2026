@@ -70,6 +70,7 @@ public class RobotContainer {
   private final SendableChooser<Command> autoChooser;
   private Command Left1Neutral;
   private Command Left1Depot;
+  private Command Left2NeutralDepot;
 
   public final Field2d field = new Field2d();
 
@@ -94,9 +95,11 @@ public class RobotContainer {
   public RobotContainer() {
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
+    NamedCommands.registerCommand("Stow Pivot", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
     NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
+    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> brake));
     //NamedCommands.registerCommand("To zone", null);
 
     new EventTrigger("Shoot")
@@ -104,13 +107,17 @@ public class RobotContainer {
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
+    Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    SmartDashboard.putBoolean("Debug Mode", false);
+    SmartDashboard.putBoolean("Incremental Shooter Control", false);
+    SmartDashboard.putBoolean("Disable Vision Localization", false);
+    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
     autoChooser.addOption("Left 1 Neutral", Left1Neutral);
     autoChooser.addOption("Left 1 Depot", Left1Depot);
+    autoChooser.addOption("Left 2 Neutral Depot", Left2NeutralDepot);
 
     configureBindings();
   }
@@ -142,10 +149,18 @@ public class RobotContainer {
     xbox.x().whileTrue(new DriveToClimbPoint(drivetrain));
     xbox.y().whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(DriveConstants.MAX_SPEED * 0.1)
-            .withTargetDirection(Rotation2d.fromDegrees(Math.round(RobotData.botPose.getRotation().getDegrees() / 45.0) * 45.0))
+            .withTargetDirection(Rotation2d.fromDegrees(Math.floor(RobotData.botPose.getRotation().getDegrees() / 90.0) * 90.0 + 45.0))
             .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
             .withHeadingPID(10, 0, 0)));
+    xbox.leftTrigger().whileTrue(Sequencing.manualShoot(roller, conveyer, shooter, kicker, hood));
+
+    // new Trigger(xbox.povDown().and(() -> Sequencing.isDriving(xbox))).whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
+    //         .withDeadband(DriveConstants.MAX_SPEED * 0.1)
+    //         .withTargetDirection(Rotation2d.fromRadians(xbox.getAngleOfMotion()))
+    //         .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
+    //         .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
+    //         .withHeadingPID(10, 0, 0)));
 
     //xbox.a().whileTrue(drivetrain.applyRequest(() -> brake));
         //xbox.b().whileTrue(drivetrain.applyRequest(() ->
@@ -219,12 +234,16 @@ public class RobotContainer {
     return drivetrain.getState();
   }
 
-  public double getDistanceToHub(){
+  public double getDistanceToTarget(){
     return RobotData.distanceToTarget;
   }
 
   public double getAngleToHub(){
     return RobotData.angleToTarget.getDegrees();
+  }
+
+  public boolean isAlignedToHub(){
+    return Sequencing.isAlignedToHub();
   }
   
 }

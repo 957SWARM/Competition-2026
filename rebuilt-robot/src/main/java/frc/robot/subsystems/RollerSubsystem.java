@@ -52,5 +52,14 @@ public class RollerSubsystem extends SubsystemBase{
         return voltage;
     }
 
+    public boolean rollersRunning(){
+        if(intake.getMotorVoltage().getValueAsDouble() > 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 
 }

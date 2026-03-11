@@ -4,6 +4,7 @@ package frc.robot.commands;
 import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveRequest.SwerveDriveBrake;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -26,6 +27,7 @@ import frc.robot.subsystems.RollerSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.commands.TargetingHelper;
 
+@Logged
 public class Sequencing {
     
     public static Command zeroHood(HoodSubsystem hood){
@@ -54,8 +56,7 @@ public class Sequencing {
 
     public static boolean isDriving(SwarmDriveController xbox){
         if(Math.abs(xbox.getXLimitedInput()) > 0.1 
-        && Math.abs(xbox.getYLimitedInput()) > 0.1
-        ){
+        && Math.abs(xbox.getYLimitedInput()) > 0.1){
             return true;
         }
         else{
@@ -124,6 +125,12 @@ public class Sequencing {
                 .withVelocityY(TargetingHelper.boundedPLoop(ClimberConstants.TRANSLATION_MIN, ClimberConstants.TRANSLATION_MAX, target.getY(), ClimberConstants.TRANSLATION_P, drivetrain.getCurrentPose().getY(), ClimberConstants.TRANSLATION_DEADBAND) * DriveConstants.MAX_SPEED) // Drive left with negative X (left)
                 .withRotationalRate(TargetingHelper.boundedPLoop(ClimberConstants.ROTATION_MIN, ClimberConstants.ROTATION_MAX, target.getRotation().getDegrees(), ClimberConstants.ROTATION_P, drivetrain.getCurrentPose().getRotation().getDegrees(), ClimberConstants.ROTATION_DEADBAND) * DriveConstants.MAX_ANGULAR) // Drive counterclockwise with negative X (left)
         ));
+    }
+
+    public static Command manualShoot(RollerSubsystem roller, ConveyerSubsystem conveyer, ShooterSubsystem shooter, KickerSubsystem kicker, HoodSubsystem hood){
+        return shootToPoint(roller, conveyer, shooter, kicker)
+        .alongWith(hood.driveHood(() -> TargetingHelper.getExpectedHoodPosition(2.50), kicker.isKickerFeeding())
+            .alongWith(shooter.shoot(() -> TargetingHelper.getExpectedShooterVelocity(2.50))));
     }
 
 

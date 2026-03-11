@@ -277,7 +277,7 @@ public class Constants {
 
     public class DriveConstants{
 
-        public static final double MAX_SPEED = 0.5 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double MAX_SPEED = 0.75 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double MAX_STRAFE_SHOOT_SPEED = 1.85;
         
