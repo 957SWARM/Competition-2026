@@ -115,8 +115,7 @@ public class Sequencing {
                                         KickerSubsystem kicker,
                                         ShooterSubsystem shooter,
                                         PivotSubsystem pivot){
-        return autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter)
-        .alongWith(agitate(pivot));
+        return autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter);
     }
 
     public static Command driveToPoint(CommandSwerveDrivetrain drivetrain, Pose2d target){

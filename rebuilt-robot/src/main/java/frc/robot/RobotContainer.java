@@ -94,20 +94,27 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
+    private final Command shootInAuto = Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact()));
+
     public PathPlannerAuto auto = null;
   
   public RobotContainer() {
 
+    shootInAuto.addRequirements(roller, conveyer, kicker, shooter, drivetrain);
+
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Stow Pivot", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
-    NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter));
+    NamedCommands.registerCommand("Shoot to Hub", shootInAuto.withTimeout(3));
+    NamedCommands.registerCommand("Idle Ballpath", conveyer.idle().alongWith(kicker.idle()));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
-    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
+    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)).withTimeout(.02));
     //NamedCommands.registerCommand("To zone", null);
 
     new EventTrigger("Shoot")
-      .whileTrue(Sequencing.shootInAuto(roller, conveyer, drivetrain, xbox, MaxSpeed, kicker, shooter, pivot));
+      .whileTrue(shootInAuto);
+    new EventTrigger("Stop")
+      .onTrue(drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");

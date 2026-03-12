@@ -17,7 +17,7 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
@@ -48,15 +48,46 @@
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 4.0
+            "name": "Shoot to Hub"
           }
         },
         {
-          "type": "path",
+          "type": "deadline",
           "data": {
-            "pathName": "left2neutralDepot.2"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left2neutralDepot.2"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Deploy Pivot"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Intake"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot to Hub"
           }
         }
       ]
