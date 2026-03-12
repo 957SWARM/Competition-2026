@@ -5,6 +5,7 @@ package frc.robot.commands;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import frc.robot.Constants.TargetingConstants;
+import frc.robot.SwarmDriveController;
 import frc.robot.enums.RobotData;
 
 
@@ -122,6 +123,26 @@ public class TargetingHelper {
     }
 
     
+    public static boolean isAlignedToTarget() {
+        if(Math.abs(RobotData.angleToTarget.getDegrees() - RobotData.botPose.getRotation().getDegrees()) < TargetingConstants.TARGETING_DEADBAND 
+        && Math.abs(RobotData.xVelocity) < 0.1 
+        && Math.abs(RobotData.yVelocity) < 0.1
+        && Math.abs(RobotData.thetaVelocity) < 0.04){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
+    public static boolean isDriving(SwarmDriveController xbox){
+        if(Math.abs(xbox.getXLimitedInput()) > 0.1 
+        && Math.abs(xbox.getYLimitedInput()) > 0.1){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
 }

@@ -53,6 +53,7 @@ import frc.robot.Constants.TargetingConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DriveToClimbPoint;
 import frc.robot.commands.Sequencing;
+import frc.robot.commands.ShootSequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.enums.RobotData;
 import frc.robot.enums.TargetingPoint;
@@ -94,7 +95,10 @@ public class RobotContainer {
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
-    private final Command shootInAuto = Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact()));
+    private final Command shootInAuto = ShootSequencing
+                                        .autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller)
+                                        .alongWith(new WaitCommand(1.6)
+                                        .andThen(pivot.trashCompact()));
 
     public PathPlannerAuto auto = null;
   
@@ -105,7 +109,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Stow Pivot", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
-    NamedCommands.registerCommand("Shoot to Hub", shootInAuto.withTimeout(3));
+    NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));
     NamedCommands.registerCommand("Idle Ballpath", conveyer.idle().alongWith(kicker.idle()));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)).withTimeout(.02));
@@ -164,7 +168,7 @@ public class RobotContainer {
             .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
             .withHeadingPID(10, 0, 0)));
-    xbox.leftTrigger().whileTrue(Sequencing.manualShoot(roller, conveyer, shooter, kicker, hood));
+    xbox.leftTrigger().whileTrue(ShootSequencing.shootNoLockSequence(kicker, conveyer, roller));
 
     // new Trigger(xbox.povDown().and(() -> Sequencing.isDriving(xbox))).whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
     //         .withDeadband(DriveConstants.MAX_SPEED * 0.1)
@@ -192,9 +196,9 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    new Trigger((xbox.rightTrigger().and(() -> !Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
+    new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
-    new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoShootOnMove(roller, conveyer, drivetrain, xbox, kicker, shooter));
+    new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
 
 
     //DEBUGGING TRIGGERS
@@ -254,7 +258,7 @@ public class RobotContainer {
   }
 
   public boolean isAlignedToHub(){
-    return Sequencing.isAlignedToHub();
+    return TargetingHelper.isAlignedToTarget();
   }
   
 }
