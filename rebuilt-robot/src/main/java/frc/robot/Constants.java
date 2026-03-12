@@ -15,8 +15,14 @@ import com.ctre.phoenix6.signals.MotorArrangementValue;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.Matrix;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.generated.TunerConstants;
@@ -255,6 +261,8 @@ public class Constants {
         public static final double kRa = 8;
 
         public static final double TARGETING_DEADBAND = 1.5; //DEGREES
+
+        public static final Matrix<N3,N1> VISION_STD_DEVS = VecBuilder.fill(1.5, 1.5, Units.degreesToRadians(30));
     }
 
     public class PowerConstants{

@@ -26,9 +26,12 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
 
 import edu.wpi.first.epilogue.Logged;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
@@ -46,6 +49,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.PivotConstants;
+import frc.robot.Constants.TargetingConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DriveToClimbPoint;
 import frc.robot.commands.Sequencing;
@@ -99,7 +103,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
     NamedCommands.registerCommand("Shoot to Hub", Sequencing.autoShootToTarget(roller, conveyer, drivetrain, xbox, kicker, shooter));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
-    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> brake));
+    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
     //NamedCommands.registerCommand("To zone", null);
 
     new EventTrigger("Shoot")
@@ -205,7 +209,7 @@ public class RobotContainer {
       if(LimelightHelpers.getTV("limelight") && LimelightHelpers.getTA("limelight") > 0.11){
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         //REMOVED FOR AUTO TESTING
-        drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds);
+        drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds, TargetingConstants.VISION_STD_DEVS);
       }
     
     //Megatag2 (Still iffy, somethings up with the rotation still)
