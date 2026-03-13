@@ -76,6 +76,8 @@ public class RobotContainer {
   private Command Left1Neutral;
   private Command Left1Depot;
   private Command Left2NeutralDepot;
+  private Command Left2NeutralBump;
+  private Command Right1Neutral;
 
   public final Field2d field = new Field2d();
 
@@ -123,6 +125,7 @@ public class RobotContainer {
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
+    Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
@@ -199,14 +202,23 @@ public class RobotContainer {
     new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
     new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
-
+    
+    Trigger incrementShoot = new Trigger(() -> SmartDashboard.getBoolean("Incremental Shooter Control", false));
 
     //DEBUGGING TRIGGERS
-    xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
-    xbox.povLeft().onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
 
-    xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVel()));
-    xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVel()));
+    incrementShoot
+      .onTrue(Commands.runOnce(() -> shooter.incrementalShooterVel = shooter.getShooterVelocity())
+      .alongWith(Commands.runOnce(() -> hood.incrementalHoodPos = hood.getHoodPosition())));
+    incrementShoot
+      .whileTrue(shooter.shoot(() -> shooter.incrementalShooterVel)
+      .alongWith(hood.driveHood(() -> hood.incrementalHoodPos, () -> true)));
+
+    new Trigger(xbox.povRight().and(incrementShoot)).onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
+    new Trigger(xbox.povLeft().and(incrementShoot)).onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
+
+    new Trigger(xbox.povUp().and(incrementShoot)).onTrue(Commands.runOnce(() -> shooter.increaseShooterVel()));
+    new Trigger(xbox.povDown().and(incrementShoot)).onTrue(Commands.runOnce(() -> shooter.decreaseShooterVel()));
 
   }
 
@@ -217,7 +229,9 @@ public class RobotContainer {
   public void updateDrivebaseOdemetry(){
 
     //Working Megatag1 Code (More reliable, less accurate)
-      if(LimelightHelpers.getTV("limelight") && LimelightHelpers.getTA("limelight") > 0.11){
+      if(LimelightHelpers.getTV("limelight") 
+      && LimelightHelpers.getTA("limelight") > 0.11 
+      && !SmartDashboard.getBoolean("Disable Vision Localization", false)){
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         //REMOVED FOR AUTO TESTING
         drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds, TargetingConstants.VISION_STD_DEVS);
