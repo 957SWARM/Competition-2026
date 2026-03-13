@@ -9,8 +9,10 @@ import java.lang.annotation.Target;
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.net.WebServer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,6 +33,7 @@ public class Robot extends TimedRobot {
     LimelightHelpers.SetIMUMode("limelight", 4); // Seed internal IMU
 
     SmartDashboard.putData("Field", m_robotContainer.field);
+    WebServer.start(5800, Filesystem.getDeployDirectory().getPath());
 
     DataLogManager.start();
     Epilogue.bind(this);
@@ -60,7 +63,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     if (m_autonomousCommand != null) {
-      CommandScheduler.getInstance().schedule(m_autonomousCommand);
+      CommandScheduler.getInstance().schedule(m_autonomousCommand.alongWith(m_robotContainer.updateShootAndHood()));
     }
   }
 

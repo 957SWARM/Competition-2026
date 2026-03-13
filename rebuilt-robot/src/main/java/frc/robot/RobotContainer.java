@@ -104,21 +104,21 @@ public class RobotContainer {
   
   public RobotContainer() {
 
-    shootInAuto.addRequirements(roller, conveyer, kicker, shooter, drivetrain);
+    //shootInAuto.addRequirements(roller, conveyer, kicker, drivetrain);
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Stow Pivot", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
-    NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));
-    NamedCommands.registerCommand("Idle Ballpath", conveyer.idle().alongWith(kicker.idle()));
+    NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
+    NamedCommands.registerCommand("Idle Ballpath", conveyer.idleConveyer().alongWith(kicker.idleKicker()));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
-    NamedCommands.registerCommand("Stop", drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)).withTimeout(.02));
+    NamedCommands.registerCommand("Stop", Commands.runOnce(() -> drivetrain.setControl(DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0))));
     //NamedCommands.registerCommand("To zone", null);
 
-    new EventTrigger("Shoot")
-      .whileTrue(shootInAuto);
-    new EventTrigger("Stop")
-      .onTrue(drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
+    // new EventTrigger("Shoot")
+    //   .whileTrue(shootInAuto);
+    // new EventTrigger("Stop")
+    //   .onTrue(drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
 
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
@@ -259,6 +259,10 @@ public class RobotContainer {
 
   public boolean isAlignedToHub(){
     return TargetingHelper.isAlignedToTarget();
+  }
+
+  public Command updateShootAndHood(){
+    return Commands.run(() -> shooter.shoot(() -> getExpectedShooterVelocity()).alongWith(hood.driveHood(() -> getExpectedHoodPosition(), kicker.isKickerFeeding())));
   }
   
 }
