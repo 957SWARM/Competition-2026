@@ -53,6 +53,7 @@ import frc.robot.Constants.TargetingConstants;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.commands.DriveToClimbPoint;
 import frc.robot.commands.Sequencing;
+import frc.robot.commands.ShiftTracker;
 import frc.robot.commands.ShootSequencing;
 import frc.robot.commands.TargetingHelper;
 import frc.robot.enums.RobotData;
@@ -76,6 +77,7 @@ public class RobotContainer {
   private Command Left1Neutral;
   private Command Left1Depot;
   private Command Left2NeutralDepot;
+  private Command Left2NeutralBump;
 
   public final Field2d field = new Field2d();
 
@@ -85,6 +87,8 @@ public class RobotContainer {
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final ConveyerSubsystem conveyer = new ConveyerSubsystem();
   private final KickerSubsystem kicker = new KickerSubsystem();
+
+  private final ShiftTracker shiftTracker = new ShiftTracker();
 
   SwarmDriveController xbox = new SwarmDriveController(0, 2, 4);
 
@@ -123,16 +127,18 @@ public class RobotContainer {
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
+    Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putBoolean("Incremental Shooter Control", false);
     SmartDashboard.putBoolean("Disable Vision Localization", false);
-    SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
+    //SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
     autoChooser.addOption("Left 1 Neutral", Left1Neutral);
     autoChooser.addOption("Left 1 Depot", Left1Depot);
     autoChooser.addOption("Left 2 Neutral Depot", Left2NeutralDepot);
+    autoChooser.addOption("Left 2 Neutral Bump", Left2NeutralBump);
 
     configureBindings();
   }
@@ -200,13 +206,21 @@ public class RobotContainer {
     //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
     new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
 
+    Trigger incrementShoot = new Trigger(() -> SmartDashboard.getBoolean("Incremental Shooter Control", false));
 
     //DEBUGGING TRIGGERS
-    xbox.povRight().onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
-    xbox.povLeft().onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
+    incrementShoot
+      .onTrue(Commands.runOnce(() -> shooter.incrementalShooterVel = shooter.getShooterVelocity())
+      .alongWith(Commands.runOnce(() -> hood.incrementalHoodPos = hood.getHoodPosition())));
+    incrementShoot
+      .whileTrue(shooter.shoot(() -> shooter.incrementalShooterVel)
+      .alongWith(hood.driveHood(() -> hood.incrementalHoodPos, () -> true)));
 
-    xbox.povUp().onTrue(Commands.runOnce(() -> shooter.increaseShooterVel()));
-    xbox.povDown().onTrue(Commands.runOnce(() -> shooter.decreaseShooterVel()));
+    new Trigger(xbox.povRight().and(incrementShoot)).onTrue(Commands.runOnce(() -> hood.increaseHoodPosition()));
+    new Trigger(xbox.povLeft().and(incrementShoot)).onTrue(Commands.runOnce(() -> hood.decreaseHoodPosition()));
+
+    new Trigger(xbox.povUp().and(incrementShoot)).onTrue(Commands.runOnce(() -> shooter.increaseShooterVel()));
+    new Trigger(xbox.povDown().and(incrementShoot)).onTrue(Commands.runOnce(() -> shooter.decreaseShooterVel()));
 
   }
 
@@ -217,7 +231,9 @@ public class RobotContainer {
   public void updateDrivebaseOdemetry(){
 
     //Working Megatag1 Code (More reliable, less accurate)
-      if(LimelightHelpers.getTV("limelight") && LimelightHelpers.getTA("limelight") > 0.11){
+      if(LimelightHelpers.getTV("limelight") 
+      && LimelightHelpers.getTA("limelight") > 0.11 
+      && !SmartDashboard.getBoolean("Disable Vision Localization", false)){
         LimelightHelpers.PoseEstimate poseEstimate = LimelightHelpers.getBotPoseEstimate_wpiBlue("limelight");
         //REMOVED FOR AUTO TESTING
         drivetrain.addVisionMeasurement(poseEstimate.pose, poseEstimate.timestampSeconds, TargetingConstants.VISION_STD_DEVS);
@@ -264,5 +280,22 @@ public class RobotContainer {
   public Command updateShootAndHood(){
     return Commands.run(() -> shooter.shoot(() -> getExpectedShooterVelocity()).alongWith(hood.driveHood(() -> getExpectedHoodPosition(), kicker.isKickerFeeding())));
   }
+
+  public double getMatchTime(){
+    return DriverStation.getMatchTime();
+  }
+
+  public boolean isHubActive(){
+    return shiftTracker.isHubActive();
+  }
+
+  public String getShiftStatus(){
+    return shiftTracker.shiftStatus();
+  }
+
+  public String getGameMessage(){
+    return DriverStation.getGameSpecificMessage();
+  }
   
+
 }

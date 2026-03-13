@@ -25,6 +25,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.util.Color;
 import frc.robot.generated.TunerConstants;
 
 public class Constants {
@@ -159,7 +160,7 @@ public class Constants {
 
     public class ConveyerConstants{
 
-        public static final double FEED_VOLTAGE = 6;
+        public static final double FEED_VOLTAGE = 9;
         public static final double KICK_VELOCITY = 75;
         public static final double MAX_KICK_VELOCITY = 90;
         public static final double IDLE_FEED_VOLTAGE = 1;
@@ -249,6 +250,18 @@ public class Constants {
             }
             
         }
+
+        public static final double TRANSITION_END = 130; //Match time seconds
+        public static final double SHIFT_1_END = 105;
+        public static final double SHIFT_2_END = 80;
+        public static final double SHIFT_3_END = 55;
+        public static final double SHIFT_4_END = 30;
+        public static final double SHIFT_ALERT = 10; //Seconds
+        public static final double SHIFT_WARNING = 5;
+
+        public static final String DEFAULT_COLOR = Color.kGreen.toHexString();
+        public static final String ALERT_COLOR = Color.kYellow.toHexString();
+        public static final String WARNING_COLOR = Color.kRed.toHexString();
     }
 
     public class TargetingConstants{
@@ -285,7 +298,7 @@ public class Constants {
 
     public class DriveConstants{
 
-        public static final double MAX_SPEED = 0.75 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double MAX_SPEED = 0.95 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double MAX_STRAFE_SHOOT_SPEED = 1.85;
         

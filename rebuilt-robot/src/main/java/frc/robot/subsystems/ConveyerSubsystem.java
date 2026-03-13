@@ -41,7 +41,6 @@ public class ConveyerSubsystem extends SubsystemBase{
     public Command idleConveyer(){
         return this.run(() ->{
             conveyer.setVoltage(ConveyerConstants.IDLE_FEED_VOLTAGE);
-            System.out.println("TESTING!!!");
         }
             
         );
