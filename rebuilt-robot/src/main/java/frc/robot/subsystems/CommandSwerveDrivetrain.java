@@ -33,6 +33,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ClimberConstants;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.commands.TargetingHelper;
+import frc.robot.enums.RobotData;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -342,7 +343,11 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
                     new PIDConstants(7, 0, 0)
                 ),
                 config,
-                () -> DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red,
+                () -> {
+                boolean isRed =
+                    DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red;
+                    return isRed ^ RobotData.getInstance().mirrorAuto;
+                },
                 this
 
             );

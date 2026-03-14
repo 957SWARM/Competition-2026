@@ -135,10 +135,30 @@ public class RobotContainer {
     SmartDashboard.putBoolean("Disable Vision Localization", false);
     //SmartDashboard.putNumber("Match Time", DriverStation.getMatchTime());
 
-    autoChooser.addOption("Left 1 Neutral", Left1Neutral);
-    autoChooser.addOption("Left 1 Depot", Left1Depot);
-    autoChooser.addOption("Left 2 Neutral Depot", Left2NeutralDepot);
-    autoChooser.addOption("Left 2 Neutral Bump", Left2NeutralBump);
+    autoChooser.addOption("Left 1 Neutral", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = false),
+      Left1Neutral
+    ));
+    autoChooser.addOption("Left 1 Depot", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = false),
+      Left1Depot
+    ));
+    autoChooser.addOption("Left 2 Neutral Depot", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = false),
+      Left2NeutralDepot
+    ));
+    autoChooser.addOption("Left 2 Neutral Bump", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = false),
+      Left2NeutralBump
+    ));
+    autoChooser.addOption("Right 1 Neutral", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = true),
+      Left1Neutral
+    ));
+    autoChooser.addOption("Right 2 Neutral Bump", Commands.sequence(
+      Commands.runOnce(() -> RobotData.getInstance().mirrorAuto = true),
+      Left2NeutralBump
+    ));
 
     configureBindings();
   }

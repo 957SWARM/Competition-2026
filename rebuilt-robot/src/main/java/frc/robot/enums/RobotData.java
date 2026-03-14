@@ -19,6 +19,7 @@ public class RobotData {
     public static double thetaVelocity = 0;
     public static Pose2d botPose = new Pose2d();
     public static Pose2d lookAheadPose;
+    public boolean mirrorAuto;
 
     private RobotData(){
 
