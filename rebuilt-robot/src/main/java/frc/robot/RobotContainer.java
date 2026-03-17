@@ -90,7 +90,7 @@ public class RobotContainer {
 
   private final ShiftTracker shiftTracker = new ShiftTracker();
 
-  SwarmDriveController xbox = new SwarmDriveController(0, 2, 4);
+  SwarmDriveController xbox = new SwarmDriveController(0, 3, 4);
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
@@ -194,7 +194,7 @@ public class RobotContainer {
             .withVelocityX(-xbox.getYLimitedInput() * MaxSpeed) // Drive forward with negative Y (forward)
             .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
             .withHeadingPID(10, 0, 0)));
-    xbox.leftTrigger().whileTrue(ShootSequencing.shootNoLockSequence(kicker, conveyer, roller));
+    xbox.leftTrigger().whileTrue(ShootSequencing.manualShoot(kicker, conveyer, roller, shooter, hood, drivetrain, xbox));
 
     // new Trigger(xbox.povDown().and(() -> Sequencing.isDriving(xbox))).whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
     //         .withDeadband(DriveConstants.MAX_SPEED * 0.1)

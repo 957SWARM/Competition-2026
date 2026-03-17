@@ -163,7 +163,7 @@ public class Constants {
         public static final double FEED_VOLTAGE = 9;
         public static final double KICK_VELOCITY = 75;
         public static final double MAX_KICK_VELOCITY = 90;
-        public static final double IDLE_FEED_VOLTAGE = 1;
+        public static final double IDLE_FEED_VOLTAGE = 1.5;
         public static final double IDLE_KICK_VELOCITY = -33;
 
         public static final int CONVEYER_ID = 18;
