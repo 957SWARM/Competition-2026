@@ -190,6 +190,9 @@ public class Constants {
             
             conveyerConfig.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
             kickerConfig.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            
+            conveyerConfig.CurrentLimits.StatorCurrentLimit = 30;
+            conveyerConfig.CurrentLimits.StatorCurrentLimitEnable = true;
 
         }
     }
@@ -286,6 +289,7 @@ public class Constants {
         public static final CurrentLimitsConfigs mid_low = new CurrentLimitsConfigs();
         public static final CurrentLimitsConfigs mid_high = new CurrentLimitsConfigs();
         public static final CurrentLimitsConfigs high = new CurrentLimitsConfigs();
+
 
         static {
             
