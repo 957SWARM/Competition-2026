@@ -72,7 +72,6 @@ public class RobotContainer {
   private double MaxSpeed = DriveConstants.MAX_SPEED; // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = DriveConstants.MAX_ANGULAR; // 3/4 of a rotation per second max angular velocity
 
-  private final SendableChooser<Command> autoChooser;
   private Command Left1Neutral;
   private Command Left1Depot;
   private Command Left2NeutralDepot;
@@ -96,6 +95,7 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    private final SendableChooser<Command> autoChooser;
 
     private final Command shootInAuto = ShootSequencing
                                         .autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller)
@@ -109,7 +109,7 @@ public class RobotContainer {
     //shootInAuto.addRequirements(roller, conveyer, kicker, drivetrain);
 
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
-    NamedCommands.registerCommand("Stow Pivot", pivot.stow());
+    NamedCommands.registerCommand("Stow Intake", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
     NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     NamedCommands.registerCommand("Idle Ballpath", conveyer.idleConveyer().alongWith(kicker.idleKicker()));
@@ -125,7 +125,7 @@ public class RobotContainer {
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
-    Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
+    //Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
     autoChooser = AutoBuilder.buildAutoChooser();
     SmartDashboard.putData("Auto Chooser", autoChooser);

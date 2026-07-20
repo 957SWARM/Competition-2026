@@ -21,12 +21,6 @@
           "data": {
             "commands": [
               {
-                "type": "path",
-                "data": {
-                  "pathName": "left1depot.1"
-                }
-              },
-              {
                 "type": "named",
                 "data": {
                   "name": "Deploy Pivot"
@@ -37,6 +31,12 @@
                 "data": {
                   "name": "Intake"
                 }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "left1depot.1"
+                }
               }
             ]
           }
@@ -45,6 +45,18 @@
           "type": "named",
           "data": {
             "name": "Intake"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "left1depot.2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot to Hub"
           }
         }
       ]
