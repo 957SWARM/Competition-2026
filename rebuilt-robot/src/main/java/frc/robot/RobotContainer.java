@@ -72,6 +72,7 @@ public class RobotContainer {
   private double MaxSpeed = DriveConstants.MAX_SPEED; // kSpeedAt12Volts desired top speed
   private double MaxAngularRate = DriveConstants.MAX_ANGULAR; // 3/4 of a rotation per second max angular velocity
 
+  private final SendableChooser<Command> autoChooser;
   private Command Left1Neutral;
   private Command Left1Depot;
   private Command Left2NeutralDepot;
@@ -81,6 +82,7 @@ public class RobotContainer {
   public final Field2d field = new Field2d();
 
   private final HoodSubsystem hood = new HoodSubsystem();
+
   private final PivotSubsystem pivot = new PivotSubsystem();
   private final RollerSubsystem roller = new RollerSubsystem();
   private final ShooterSubsystem shooter = new ShooterSubsystem();
@@ -88,6 +90,7 @@ public class RobotContainer {
   private final KickerSubsystem kicker = new KickerSubsystem();
 
   SwarmDriveController xbox = new SwarmDriveController(0, 2, 4);
+  SwarmDriveController nav = new SwarmDriveController(1, 0, 0);
 
   PIDController pid = new PIDController(0.25, 0, 0);
 
@@ -95,7 +98,6 @@ public class RobotContainer {
     private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    private final SendableChooser<Command> autoChooser;
 
     private final Command shootInAuto = ShootSequencing
                                         .autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller)
@@ -127,7 +129,7 @@ public class RobotContainer {
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
     //Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = new SendableChooser<Command>();
     SmartDashboard.putData("Auto Chooser", autoChooser);
     SmartDashboard.putBoolean("Incremental Shooter Control", false);
     SmartDashboard.putBoolean("Disable Vision Localization", false);
@@ -162,9 +164,9 @@ public class RobotContainer {
     xbox.leftBumper().toggleOnTrue(pivot.stow());
     xbox.rightBumper().toggleOnTrue(roller.intakeCommand());
     xbox.b().toggleOnTrue(roller.ejectCommand().alongWith(conveyer.runConveyerBackwards()));
-    xbox.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
+    nav.a().whileTrue(Sequencing.agitate(pivot).repeatedly());
     xbox.a().toggleOnFalse(pivot.deploy());
-    xbox.x().whileTrue(new DriveToClimbPoint(drivetrain));
+    nav.x().whileTrue(drivetrain.applyRequest(() -> brake));
     xbox.y().whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(DriveConstants.MAX_SPEED * 0.1)
             .withTargetDirection(Rotation2d.fromDegrees(Math.floor(RobotData.botPose.getRotation().getDegrees() / 90.0) * 90.0 + 45.0))
