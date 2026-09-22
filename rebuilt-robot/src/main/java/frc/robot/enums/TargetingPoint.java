@@ -1,8 +1,11 @@
 package frc.robot.enums;
 
+import java.util.Optional;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 
 public enum TargetingPoint {
 
@@ -29,6 +32,15 @@ public enum TargetingPoint {
 
     public double getDistanceToPoint(Pose2d botPose){
         Pose2d poseDifference = botPose.relativeTo(this.point);
+        double relativeX = poseDifference.getX();
+        double relativeY = poseDifference.getY();
+        double distance = Math.hypot(relativeX, relativeY);
+
+        return distance;
+    }
+
+    public double getDist(Pose2d botPose, Pose2d targetPose){
+        Pose2d poseDifference = botPose.relativeTo(targetPose);
         double relativeX = poseDifference.getX();
         double relativeY = poseDifference.getY();
         double distance = Math.hypot(relativeX, relativeY);

@@ -201,10 +201,9 @@ public class RobotContainer {
     xbox.back().onTrue(drivetrain.runOnce(drivetrain::seedFieldCentric)
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
-    new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
-    //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
+    new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));//.alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
-    
+    //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
     Trigger incrementShoot = new Trigger(() -> SmartDashboard.getBoolean("Incremental Shooter Control", false));
 
     //DEBUGGING TRIGGERS

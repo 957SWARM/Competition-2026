@@ -1,6 +1,8 @@
 package frc.robot.subsystems;
 
 import java.util.function.BooleanSupplier;
+
+import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.epilogue.Logged;
@@ -14,23 +16,24 @@ public class ConveyerSubsystem extends SubsystemBase{
     boolean isRunning = false;
 
     TalonFX conveyer = new TalonFX(ConveyerConstants.CONVEYER_ID);
+    private final VoltageOut voltageRequest = new VoltageOut(0);
 
     public ConveyerSubsystem(){
 
         conveyer.getConfigurator().apply(ConveyerConstants.conveyerConfig);
-        conveyer.getConfigurator().apply(PowerConstants.mid_low);
+        conveyer.getConfigurator().apply(PowerConstants.mid_high);
 
     }
 
     public Command runConveyerForwards(){
         return this.run(() ->
-            conveyer.setVoltage(ConveyerConstants.FEED_VOLTAGE)
+            conveyer.setControl(voltageRequest.withOutput(ConveyerConstants.FEED_VOLTAGE))//conveyer.setVoltage(ConveyerConstants.FEED_VOLTAGE)
         );
     }
 
     public Command stopConveyer(){
         return this.run(() ->
-            conveyer.setVoltage(0)
+            conveyer.setControl(voltageRequest.withOutput(0))//conveyer.setVoltage(0)
         );
     }
 

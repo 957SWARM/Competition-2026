@@ -278,6 +278,9 @@ public class Constants {
 
         public static final double TARGETING_DEADBAND = 1.5; //DEGREES
 
+        public static final double MOVE_CONSTANT_H = 0.5;
+        public static final double MOVE_CONSTANT_P = 0.5;
+
         public static final Matrix<N3,N1> VISION_STD_DEVS = VecBuilder.fill(1.5, 1.5, Units.degreesToRadians(45));
     }
 
