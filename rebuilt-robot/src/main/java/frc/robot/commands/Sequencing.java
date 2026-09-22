@@ -1,18 +1,13 @@
 package frc.robot.commands;
 
-import java.lang.annotation.Target;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
-
 import edu.wpi.first.epilogue.Logged;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.PivotConstants;
-import frc.robot.enums.TargetingPoint;
 import frc.robot.SwarmDriveController;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.ConveyerSubsystem;
@@ -20,13 +15,11 @@ import frc.robot.subsystems.HoodSubsystem;
 import frc.robot.subsystems.KickerSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
-import frc.robot.enums.TargetingPoint;
 
 @Logged
 public class Sequencing {
     
     private static SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric();
-    private static SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     public static Command zeroHood(HoodSubsystem hood){
         return new WaitCommand(0.5).andThen(hood.zeroEncoder()

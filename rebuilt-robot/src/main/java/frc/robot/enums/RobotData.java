@@ -1,8 +1,6 @@
 package frc.robot.enums;
 
 import com.ctre.phoenix6.swerve.SwerveDrivetrain.SwerveDriveState;
-
-import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 

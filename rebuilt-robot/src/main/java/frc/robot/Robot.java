@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.lang.annotation.Target;
-
 import edu.wpi.first.epilogue.Epilogue;
 import edu.wpi.first.epilogue.Logged;
 import edu.wpi.first.math.geometry.Pose2d;
