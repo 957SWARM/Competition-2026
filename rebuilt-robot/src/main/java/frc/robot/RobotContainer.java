@@ -146,9 +146,7 @@ public class RobotContainer {
     pivot.setDefaultCommand(pivot.deploy());
     roller.setDefaultCommand(roller.stopIntakeCommand());
     hood.setDefaultCommand(hood.driveHood(() -> getExpectedHoodPosition(), kicker.isKickerFeeding()));
-    //hood.setDefaultCommand(hood.driveHood(() -> hood.incrementalHoodPos, () -> true));
     shooter.setDefaultCommand(shooter.shoot(() -> getExpectedShooterVelocity()));
-    //shooter.setDefaultCommand(shooter.shoot(() -> shooter.incrementalShooterVel));
     conveyer.setDefaultCommand(conveyer.idleConveyer()); 
     kicker.setDefaultCommand(kicker.idleKicker());
 

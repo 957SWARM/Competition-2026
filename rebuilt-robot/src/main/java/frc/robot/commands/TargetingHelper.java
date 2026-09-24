@@ -43,7 +43,7 @@ public class TargetingHelper {
         int closest = getNearestPoint(distance);
         
         double targetAngle = (velocity[closest] * (1 - w)) + (velocity[closest + 1] * w);
-        return targetAngle;
+        return targetAngle + (TargetingConstants.MOVE_CONSTANT_P*Math.pow(RobotData.xVelocity, 2));
     }
 
     /* 
@@ -91,7 +91,7 @@ public class TargetingHelper {
     public static double getRotationSpeed(){
         double botHeading = RobotData.lookAheadPose.getRotation().getDegrees();
 
-        double targetHeading = RobotData.angleToTarget.getDegrees() - ((Math.pow(RobotData.yVelocity+1, 2))*TargetingConstants.MOVE_CONSTANT_H);
+        double targetHeading = RobotData.angleToTarget.getDegrees() - ((Math.pow(RobotData.yVelocity*TargetingConstants.MOVE_CONSTANT_H+1, 2)));
          
                 
         double error = targetHeading - botHeading;
