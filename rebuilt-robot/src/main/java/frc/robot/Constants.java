@@ -86,7 +86,7 @@ public class Constants {
         
         public static final int INTAKE_ID = 17;
 
-        public static final double INTAKE_VOLTAGE = 7;
+        public static final double INTAKE_VOLTAGE = 9;
         public static final double EJECT_VOLTAGE = -3.0;
 
         public static final double INTAKE_FROM_SPEED_SCALAR = 0.15;
@@ -160,13 +160,13 @@ public class Constants {
     public class ConveyerConstants{
 
         public static final double FEED_VOLTAGE = 6;
-        public static final double KICK_VELOCITY = 75;
+        public static final double KICK_VELOCITY = 80;
         public static final double MAX_KICK_VELOCITY = 90;
         public static final double IDLE_FEED_VOLTAGE = 0;
         public static final double IDLE_KICK_VELOCITY = -33;
 
-        public static final int CONVEYER_ID = 18;
-        public static final int KICKER_ID = 20;
+        public static final int CONVEYER_ID = 20;
+        public static final int KICKER_ID = 18;
 
         public static final TalonFXConfiguration conveyerConfig = new TalonFXConfiguration();
         public static final TalonFXConfiguration kickerConfig = new TalonFXConfiguration();
@@ -304,7 +304,7 @@ public class Constants {
 
     public class DriveConstants{
 
-        public static final double MAX_SPEED = 0.75 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
         public static final double MAX_STRAFE_SHOOT_SPEED = 1.85;
         

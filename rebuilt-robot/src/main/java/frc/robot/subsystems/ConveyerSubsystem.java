@@ -26,7 +26,7 @@ public class ConveyerSubsystem extends SubsystemBase{
     }
 
     public Command runConveyerForwards(){
-        return this.run(() ->
+        return this.runOnce(() ->
             conveyer.setControl(voltageRequest.withOutput(ConveyerConstants.FEED_VOLTAGE))//conveyer.setVoltage(ConveyerConstants.FEED_VOLTAGE)
         );
     }

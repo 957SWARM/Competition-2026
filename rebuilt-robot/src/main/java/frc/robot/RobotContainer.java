@@ -174,6 +174,7 @@ public class RobotContainer {
             .withVelocityY(-xbox.getXLimitedInput() * MaxSpeed)
             .withHeadingPID(10, 0, 0)));
     xbox.leftTrigger().whileTrue(ShootSequencing.shootNoLockSequence(kicker, conveyer, roller));
+    xbox.rightTrigger().onFalse(conveyer.stopConveyer());
 
     // new Trigger(xbox.povDown().and(() -> Sequencing.isDriving(xbox))).whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
     //         .withDeadband(DriveConstants.MAX_SPEED * 0.1)
@@ -203,6 +204,7 @@ public class RobotContainer {
 
     new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));//.alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
+
     //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
     Trigger incrementShoot = new Trigger(() -> SmartDashboard.getBoolean("Incremental Shooter Control", false));
 
