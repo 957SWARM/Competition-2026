@@ -160,7 +160,7 @@ public class Constants {
     public class ConveyerConstants{
 
         public static final double FEED_VOLTAGE = 6;
-        public static final double KICK_VELOCITY = 80;
+        public static final double KICK_VELOCITY = 75;
         public static final double MAX_KICK_VELOCITY = 90;
         public static final double IDLE_FEED_VOLTAGE = 0;
         public static final double IDLE_KICK_VELOCITY = -33;
@@ -277,7 +277,7 @@ public class Constants {
 
         public static final double TARGETING_DEADBAND = 1.5; //DEGREES
 
-        public static final double MOVE_CONSTANT_H = 0.5;
+        public static final double MOVE_CONSTANT_H = 7;
         public static final double MOVE_CONSTANT_P = 0.5;
 
         public static final Matrix<N3,N1> VISION_STD_DEVS = VecBuilder.fill(1.5, 1.5, Units.degreesToRadians(45));
@@ -306,7 +306,7 @@ public class Constants {
 
         public static final double MAX_SPEED = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double MAX_ANGULAR = RotationsPerSecond.of(0.75).in(RadiansPerSecond);
-        public static final double MAX_STRAFE_SHOOT_SPEED = 1.85;
+        public static final double MAX_STRAFE_SHOOT_SPEED = 1;
         
         public static final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MAX_SPEED * 0.1).withRotationalDeadband(MAX_ANGULAR * 0.01) // Add a 10% deadband
