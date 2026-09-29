@@ -34,6 +34,12 @@
           "data": {
             "pathName": "right1neutral.1"
           }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot to Hub"
+          }
         }
       ]
     }

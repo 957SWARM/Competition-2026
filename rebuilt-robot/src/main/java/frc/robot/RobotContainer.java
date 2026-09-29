@@ -119,14 +119,10 @@ public class RobotContainer {
     NamedCommands.registerCommand("Stop", Commands.runOnce(() -> drivetrain.setControl(DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0))));
     //NamedCommands.registerCommand("To zone", null);
 
-    // new EventTrigger("Shoot")
-    //   .whileTrue(shootInAuto);
-    // new EventTrigger("Stop")
-    //   .onTrue(drivetrain.applyRequest(() -> DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0)));
-
     Left1Neutral = new PathPlannerAuto("Left 1 Neutral");
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
+    Right1Neutral = new PathPlannerAuto("Right 1 Neutral");
     //Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
     autoChooser = new SendableChooser<Command>();
