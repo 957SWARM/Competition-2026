@@ -7,25 +7,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.5
+            "waitTime": 0.3
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "left2neutralDepot.0"
+            "pathName": "right2neutral.0"
           }
         },
         {
-          "type": "deadline",
+          "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "left2neutralDepot.1"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -36,6 +30,12 @@
                 "type": "named",
                 "data": {
                   "name": "Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "right2neutral.1"
                 }
               }
             ]
@@ -67,15 +67,21 @@
           }
         },
         {
-          "type": "deadline",
+          "type": "named",
+          "data": {
+            "name": "Stop"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "right2neutral.2"
+          }
+        },
+        {
+          "type": "parallel",
           "data": {
             "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "left2neutralDepot.2"
-                }
-              },
               {
                 "type": "named",
                 "data": {
@@ -89,9 +95,9 @@
                 }
               },
               {
-                "type": "named",
+                "type": "path",
                 "data": {
-                  "name": "Idle Ballpath"
+                  "pathName": "right2neutral.3"
                 }
               }
             ]

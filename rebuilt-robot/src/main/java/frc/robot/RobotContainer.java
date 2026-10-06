@@ -78,6 +78,7 @@ public class RobotContainer {
   private Command Left2NeutralDepot;
   private Command Left2NeutralBump;
   private Command Right1Neutral;
+  private Command Right2Neutral;
 
   public final Field2d field = new Field2d();
 
@@ -113,7 +114,7 @@ public class RobotContainer {
     NamedCommands.registerCommand("Deploy Pivot", pivot.deploy());
     NamedCommands.registerCommand("Stow Intake", pivot.stow());
     NamedCommands.registerCommand("Intake", roller.intakeCommand());
-    NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller).alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
+    NamedCommands.registerCommand("Shoot to Hub", ShootSequencing.shootNoLockSequence(kicker, conveyer, roller));//.alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
     NamedCommands.registerCommand("Idle Ballpath", conveyer.idleConveyer().alongWith(kicker.idleKicker()));
     NamedCommands.registerCommand("Agitate", Sequencing.agitate(pivot).repeatedly());
     NamedCommands.registerCommand("Stop", Commands.runOnce(() -> drivetrain.setControl(DriveConstants.drive.withVelocityX(0).withVelocityY(0).withRotationalRate(0))));
@@ -123,6 +124,7 @@ public class RobotContainer {
     Left1Depot = new PathPlannerAuto("Left 1 Depot");
     Left2NeutralDepot = new PathPlannerAuto("Left 2 Neutral Depot");
     Right1Neutral = new PathPlannerAuto("Right 1 Neutral");
+    Right2Neutral = new PathPlannerAuto("Right 2 Neutral");
     //Left2NeutralBump = new PathPlannerAuto("Left 2 Neutral Bump");
 
     autoChooser = new SendableChooser<Command>();
@@ -134,6 +136,8 @@ public class RobotContainer {
     autoChooser.addOption("Left 1 Neutral", Left1Neutral);
     autoChooser.addOption("Left 1 Depot", Left1Depot);
     autoChooser.addOption("Left 2 Neutral Depot", Left2NeutralDepot);
+    autoChooser.addOption("Right 1 Neutral", Right1Neutral);
+    autoChooser.addOption("Right 2 Neutral", Right2Neutral);
 
     configureBindings();
   }
@@ -169,6 +173,7 @@ public class RobotContainer {
             .withHeadingPID(10, 0, 0)));
     xbox.leftTrigger().whileTrue(ShootSequencing.shootNoLockSequence(kicker, conveyer, roller));
     xbox.rightTrigger().onFalse(conveyer.stopConveyer());
+    nav.y().onTrue(Sequencing.zeroHood(hood));
 
     // new Trigger(xbox.povDown().and(() -> Sequencing.isDriving(xbox))).whileTrue(drivetrain.applyRequest(() -> new SwerveRequest.FieldCentricFacingAngle()
     //         .withDeadband(DriveConstants.MAX_SPEED * 0.1)
@@ -197,7 +202,7 @@ public class RobotContainer {
     .andThen(Commands.runOnce(() -> LimelightHelpers.SetRobotOrientation("limelight", 0, 0, 0, 0, 0, 0))));
 
     new Trigger((xbox.rightTrigger().and(() -> !TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));//.alongWith(new WaitCommand(1.6).andThen(pivot.trashCompact())));
-    new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.shootOnMoveSequence(drivetrain, xbox, kicker, conveyer, roller));
+    new Trigger((xbox.rightTrigger().and(() -> TargetingHelper.isDriving(xbox)))).whileTrue(ShootSequencing.autoAlignAndShootSequence(drivetrain, xbox, kicker, conveyer, roller));
 
     //new Trigger((xbox.rightTrigger().and(() -> Sequencing.isDriving(xbox)))).whileTrue(Sequencing.autoAlignAndDrive(drivetrain, xbox));
     Trigger incrementShoot = new Trigger(() -> SmartDashboard.getBoolean("Incremental Shooter Control", false));

@@ -91,7 +91,7 @@ public class TargetingHelper {
     public static double getRotationSpeed(){
         double botHeading = RobotData.lookAheadPose.getRotation().getDegrees();
 
-        double targetHeading = RobotData.angleToTarget.getDegrees() - ((Math.pow(RobotData.yVelocity*TargetingConstants.MOVE_CONSTANT_H+1, 2)));
+        double targetHeading = RobotData.angleToTarget.getDegrees();
          
                 
         double error = targetHeading - botHeading;

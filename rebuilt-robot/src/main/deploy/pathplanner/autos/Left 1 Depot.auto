@@ -37,6 +37,12 @@
                 "data": {
                   "pathName": "left1depot.1"
                 }
+              },
+              {
+                "type": "deadline",
+                "data": {
+                  "commands": []
+                }
               }
             ]
           }
@@ -54,9 +60,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "deadline",
           "data": {
-            "name": "Shoot to Hub"
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 7.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shoot to Hub"
+                }
+              }
+            ]
           }
         }
       ]
